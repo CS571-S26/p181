@@ -314,6 +314,10 @@ blockquote {
   border-radius: 38px 30px 34px 28px;
 }
 
+.data-card {
+  border-radius: 30px 36px 32px 28px;
+}
+
 .history-card {
   border-radius: 34px 38px 30px 36px;
   padding-bottom: 1.9rem;
@@ -860,6 +864,27 @@ blockquote footer {
   color: #5f7b8b;
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+.data-copy {
+  margin-top: 0.85rem;
+}
+
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.import-message {
+  margin: 1rem 0 0;
+  color: #2e7b78;
+  font-weight: 600;
+}
+
+.import-message-error {
+  color: #b45309;
 }
 
 .history-message {

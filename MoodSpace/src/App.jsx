@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { HashRouter, NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 
@@ -209,6 +209,34 @@ function buildChartPoints(series, width, height, padding) {
     .filter(Boolean)
 }
 
+function normalizeImportedEntries(rawEntries) {
+  if (!Array.isArray(rawEntries)) {
+    return []
+  }
+
+  return rawEntries
+    .map((entry) => {
+      const fallbackMood = moods.find((mood) => mood.id === entry?.moodId) ?? moods[0]
+      const entryDate = new Date(entry?.createdAt)
+
+      return {
+        id:
+          typeof entry?.id === 'string' && entry.id.trim()
+            ? entry.id
+            : crypto.randomUUID(),
+        moodId: fallbackMood.id,
+        moodLabel: fallbackMood.label,
+        emoji: fallbackMood.emoji,
+        score: fallbackMood.score,
+        note: typeof entry?.note === 'string' ? entry.note : '',
+        createdAt: Number.isNaN(entryDate.getTime())
+          ? new Date().toISOString()
+          : entryDate.toISOString(),
+      }
+    })
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+}
+
 function HomePage({
   editingEntryId,
   entries,
@@ -217,6 +245,8 @@ function HomePage({
   handleSubmit,
   historyFilter,
   historyMessage,
+  importInputRef,
+  importMessage,
   moodsList,
   note,
   quoteIsSaved,
@@ -224,6 +254,8 @@ function HomePage({
   saveMessage,
   selectedMood,
   selectedMoodDetails,
+  triggerImport,
+  exportData,
   setEditingMoodId,
   setEditingEntryId,
   setEditingNote,
@@ -361,6 +393,42 @@ function HomePage({
                 ))}
               </ul>
             )}
+          </section>
+
+          <section className="card data-card">
+            <div className="card-heading">
+              <div>
+                <p className="section-label">Backup tools</p>
+                <h3>Export or import</h3>
+              </div>
+            </div>
+            <p className="section-copy data-copy">
+              Save your MoodSpace entries as a JSON file or restore them later.
+            </p>
+            <div className="data-actions">
+              <button type="button" className="ghost-button" onClick={exportData}>
+                Export data
+              </button>
+              <button type="button" className="ghost-button" onClick={triggerImport}>
+                Import data
+              </button>
+            </div>
+            <input
+              ref={importInputRef}
+              className="visually-hidden"
+              type="file"
+              accept="application/json"
+              onChange={importMessage.onImport}
+            />
+            {importMessage.text ? (
+              <p
+                className={`import-message ${
+                  importMessage.kind === 'error' ? 'import-message-error' : ''
+                }`}
+              >
+                {importMessage.text}
+              </p>
+            ) : null}
           </section>
         </div>
       </section>
@@ -534,7 +602,6 @@ function HomePage({
 function TrendsPage({
   activeChartPoint,
   entries,
-  moodsList,
   setActiveChartPoint,
   stats,
   trendInsights,
@@ -749,6 +816,7 @@ function TrendsPage({
 }
 
 function AppShell() {
+  const importInputRef = useRef(null)
   const [entries, setEntries] = useState(() => readStoredValue(STORAGE_KEY, []))
   const [favoriteQuotes, setFavoriteQuotes] = useState(() =>
     readStoredValue(FAVORITES_KEY, []),
@@ -762,6 +830,7 @@ function AppShell() {
   const [note, setNote] = useState('')
   const [saveMessage, setSaveMessage] = useState('')
   const [historyMessage, setHistoryMessage] = useState('')
+  const [importMessage, setImportMessage] = useState({ text: '', kind: 'info' })
 
   const quoteOfTheDay = useMemo(() => getDailyQuote(), [])
   const selectedMoodDetails = moods.find((mood) => mood.id === selectedMood) ?? moods[0]
@@ -867,6 +936,7 @@ function AppShell() {
     setEntries((currentEntries) => [newEntry, ...currentEntries])
     setNote('')
     setSaveMessage(`Saved your ${selectedMoodDetails.label.toLowerCase()} check-in.`)
+    setHistoryMessage('')
   }
 
   function toggleFavoriteQuote() {
@@ -897,6 +967,7 @@ function AppShell() {
       currentEntries.filter((entry) => entry.id !== entryId),
     )
     setHistoryMessage('Entry deleted from your memory wall.')
+    setSaveMessage('')
   }
 
   function updateEntry(entryId) {
@@ -921,6 +992,71 @@ function AppShell() {
     setEditingMoodId(moods[0].id)
     setEditingNote('')
     setHistoryMessage('Entry updated.')
+    setSaveMessage('')
+  }
+
+  function exportData() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      entries,
+      favoriteQuotes,
+    }
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json',
+    })
+    const objectUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const stamp = new Date().toISOString().slice(0, 10)
+
+    link.href = objectUrl
+    link.download = `moodspace-backup-${stamp}.json`
+    link.click()
+    URL.revokeObjectURL(objectUrl)
+    setImportMessage({ text: 'Backup downloaded.', kind: 'info' })
+  }
+
+  function triggerImport() {
+    importInputRef.current?.click()
+  }
+
+  async function handleImport(event) {
+    const file = event.target.files?.[0]
+    if (!file) {
+      return
+    }
+
+    try {
+      const rawText = await file.text()
+      const parsed = JSON.parse(rawText)
+      const importedEntries = normalizeImportedEntries(parsed?.entries)
+      const importedQuotes = Array.isArray(parsed?.favoriteQuotes)
+        ? parsed.favoriteQuotes.filter(
+            (quote) =>
+              typeof quote?.text === 'string' && typeof quote?.author === 'string',
+          )
+        : []
+
+      setEntries(importedEntries)
+      setFavoriteQuotes(importedQuotes)
+      setEditingEntryId(null)
+      setEditingMoodId(moods[0].id)
+      setEditingNote('')
+      setHistoryFilter('all')
+      setImportMessage({
+        text: `Imported ${importedEntries.length} entries and ${importedQuotes.length} saved quotes.`,
+        kind: 'info',
+      })
+      setHistoryMessage('Your MoodSpace data was restored.')
+      setSaveMessage('')
+    } catch {
+      setImportMessage({
+        text: 'That file could not be imported. Please choose a valid MoodSpace backup.',
+        kind: 'error',
+      })
+    } finally {
+      event.target.value = ''
+    }
   }
 
   const quoteIsSaved = favoriteQuotes.some(
@@ -982,6 +1118,8 @@ function AppShell() {
                 handleSubmit={handleSubmit}
                 historyFilter={historyFilter}
                 historyMessage={historyMessage}
+                importInputRef={importInputRef}
+                importMessage={{ ...importMessage, onImport: handleImport }}
                 moodsList={moods}
                 note={note}
                 quoteIsSaved={quoteIsSaved}
@@ -989,6 +1127,8 @@ function AppShell() {
                 saveMessage={saveMessage}
                 selectedMood={selectedMood}
                 selectedMoodDetails={selectedMoodDetails}
+                triggerImport={triggerImport}
+                exportData={exportData}
                 setEditingEntryId={setEditingEntryId}
                 setEditingMoodId={setEditingMoodId}
                 setEditingNote={setEditingNote}
@@ -1010,7 +1150,6 @@ function AppShell() {
               <TrendsPage
                 activeChartPoint={activeChartPoint}
                 entries={entries}
-                moodsList={moods}
                 setActiveChartPoint={setActiveChartPoint}
                 stats={stats}
                 trendInsights={trendInsights}
