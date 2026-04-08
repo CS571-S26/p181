@@ -37,6 +37,21 @@ const quotes = [
   },
 ]
 
+const homeHighlights = [
+  {
+    title: 'Check in softly',
+    copy: 'Choose the feeling that fits without needing to explain everything.',
+  },
+  {
+    title: 'Keep tiny notes',
+    copy: 'Short reflections make the app feel personal instead of just functional.',
+  },
+  {
+    title: 'Notice your rhythm',
+    copy: 'Your memory wall and trend view start to tell a story over time.',
+  },
+]
+
 function readStoredValue(key, fallback) {
   try {
     const rawValue = window.localStorage.getItem(key)
@@ -69,6 +84,14 @@ function formatShortDate(dateKey) {
     month: 'short',
     day: 'numeric',
   }).format(new Date(`${dateKey}T00:00:00`))
+}
+
+function formatLongDate(date = new Date()) {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
 }
 
 function getStreak(entries) {
@@ -237,6 +260,161 @@ function normalizeImportedEntries(rawEntries) {
     .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
 }
 
+function OverviewStrip() {
+  return (
+    <section className="overview-strip" aria-label="MoodSpace overview">
+      {homeHighlights.map((highlight, index) => (
+        <article key={highlight.title} className="overview-card">
+          <span className="overview-index">0{index + 1}</span>
+          <h3>{highlight.title}</h3>
+          <p>{highlight.copy}</p>
+        </article>
+      ))}
+    </section>
+  )
+}
+
+function HistoryEntryCard({
+  deleteEntry,
+  editingEntryId,
+  editingMoodId,
+  editingNote,
+  entry,
+  moodsList,
+  setEditingEntryId,
+  setEditingMoodId,
+  setEditingNote,
+  updateEntry,
+}) {
+  return (
+    <li className="entry-item">
+      <span className="entry-pin" aria-hidden="true"></span>
+      {editingEntryId === entry.id ? (
+        <>
+          <div className="entry-topline">
+            <div className="entry-mood">
+              <span className="entry-emoji">
+                {moodsList.find((mood) => mood.id === editingMoodId)?.emoji}
+              </span>
+              <div>
+                <strong>Edit memory</strong>
+                <p>{formatDate(entry.createdAt)}</p>
+              </div>
+            </div>
+            <div className="entry-actions">
+              <span className="entry-tag">editing</span>
+            </div>
+          </div>
+
+          <div className="entry-edit-grid">
+            {moodsList.map((mood) => (
+              <button
+                key={mood.id}
+                type="button"
+                className={`entry-mood-chip ${
+                  editingMoodId === mood.id ? 'entry-mood-chip-active' : ''
+                }`}
+                onClick={() => setEditingMoodId(mood.id)}
+              >
+                <span>{mood.emoji}</span>
+                <span>{mood.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <label className="entry-edit-field">
+            <span className="visually-hidden">Edit note</span>
+            <textarea
+              rows="4"
+              value={editingNote}
+              onChange={(event) => setEditingNote(event.target.value)}
+            />
+          </label>
+
+          <div className="entry-edit-actions">
+            <button
+              type="button"
+              className="mini-action-button"
+              onClick={() => updateEntry(entry.id)}
+            >
+              Save changes
+            </button>
+            <button
+              type="button"
+              className="mini-action-button mini-action-button-ghost"
+              onClick={() => {
+                setEditingEntryId(null)
+                setEditingMoodId(moodsList[0].id)
+                setEditingNote('')
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="entry-topline">
+            <div className="entry-mood">
+              <span className="entry-emoji">{entry.emoji}</span>
+              <div>
+                <strong>{entry.moodLabel}</strong>
+                <p>{formatDate(entry.createdAt)}</p>
+              </div>
+            </div>
+            <div className="entry-actions">
+              <span className="entry-tag">saved feeling</span>
+              <button
+                type="button"
+                className="delete-entry-button"
+                onClick={() => {
+                  setEditingEntryId(entry.id)
+                  setEditingMoodId(entry.moodId)
+                  setEditingNote(entry.note)
+                }}
+                aria-label={`Edit ${entry.moodLabel} entry from ${formatDate(entry.createdAt)}`}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className="delete-entry-button"
+                onClick={() => deleteEntry(entry.id)}
+                aria-label={`Delete ${entry.moodLabel} entry from ${formatDate(entry.createdAt)}`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+          <p className="entry-note">{entry.note || 'No note added for this check-in.'}</p>
+        </>
+      )}
+    </li>
+  )
+}
+
+function HeaderDashboard({ entriesCount, favoriteQuotesCount, todayLabel }) {
+  return (
+    <div className="header-dashboard" aria-label="MoodSpace snapshot">
+      <article className="dashboard-card dashboard-card-wide">
+        <span className="dashboard-label">Today</span>
+        <strong>{todayLabel}</strong>
+        <p>Show up for a two-minute check-in and let that be enough.</p>
+      </article>
+      <article className="dashboard-card">
+        <span className="dashboard-label">Saved entries</span>
+        <strong>{entriesCount}</strong>
+        <p>Moments you have already captured.</p>
+      </article>
+      <article className="dashboard-card">
+        <span className="dashboard-label">Favorite quotes</span>
+        <strong>{favoriteQuotesCount}</strong>
+        <p>Kind words you wanted to keep nearby.</p>
+      </article>
+    </div>
+  )
+}
+
 function HomePage({
   editingEntryId,
   entries,
@@ -270,7 +448,7 @@ function HomePage({
   editingNote,
 }) {
   return (
-    <>
+    <div className="page-stack home-page">
       <section className="hero-panel">
         <div className="hero-copy">
           <p className="section-label">Today&apos;s prompt</p>
@@ -305,6 +483,8 @@ function HomePage({
           </div>
         </div>
       </section>
+
+      <OverviewStrip />
 
       <section className="content-grid">
         <form className="card form-card" onSubmit={handleSubmit}>
@@ -486,116 +666,24 @@ function HomePage({
         ) : (
           <ul className="entry-list">
             {filteredEntries.map((entry) => (
-              <li key={entry.id} className="entry-item">
-                <span className="entry-pin" aria-hidden="true"></span>
-                {editingEntryId === entry.id ? (
-                  <>
-                    <div className="entry-topline">
-                      <div className="entry-mood">
-                        <span className="entry-emoji">
-                          {moodsList.find((mood) => mood.id === editingMoodId)?.emoji}
-                        </span>
-                        <div>
-                          <strong>Edit memory</strong>
-                          <p>{formatDate(entry.createdAt)}</p>
-                        </div>
-                      </div>
-                      <div className="entry-actions">
-                        <span className="entry-tag">editing</span>
-                      </div>
-                    </div>
-
-                    <div className="entry-edit-grid">
-                      {moodsList.map((mood) => (
-                        <button
-                          key={mood.id}
-                          type="button"
-                          className={`entry-mood-chip ${
-                            editingMoodId === mood.id ? 'entry-mood-chip-active' : ''
-                          }`}
-                          onClick={() => setEditingMoodId(mood.id)}
-                        >
-                          <span>{mood.emoji}</span>
-                          <span>{mood.label}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <label className="entry-edit-field">
-                      <span className="visually-hidden">Edit note</span>
-                      <textarea
-                        rows="4"
-                        value={editingNote}
-                        onChange={(event) => setEditingNote(event.target.value)}
-                      />
-                    </label>
-
-                    <div className="entry-edit-actions">
-                      <button
-                        type="button"
-                        className="mini-action-button"
-                        onClick={() => updateEntry(entry.id)}
-                      >
-                        Save changes
-                      </button>
-                      <button
-                        type="button"
-                        className="mini-action-button mini-action-button-ghost"
-                        onClick={() => {
-                          setEditingEntryId(null)
-                          setEditingMoodId(moodsList[0].id)
-                          setEditingNote('')
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="entry-topline">
-                      <div className="entry-mood">
-                        <span className="entry-emoji">{entry.emoji}</span>
-                        <div>
-                          <strong>{entry.moodLabel}</strong>
-                          <p>{formatDate(entry.createdAt)}</p>
-                        </div>
-                      </div>
-                      <div className="entry-actions">
-                        <span className="entry-tag">saved feeling</span>
-                        <button
-                          type="button"
-                          className="delete-entry-button"
-                          onClick={() => {
-                            setEditingEntryId(entry.id)
-                            setEditingMoodId(entry.moodId)
-                            setEditingNote(entry.note)
-                          }}
-                          aria-label={`Edit ${entry.moodLabel} entry from ${formatDate(entry.createdAt)}`}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="delete-entry-button"
-                          onClick={() => deleteEntry(entry.id)}
-                          aria-label={`Delete ${entry.moodLabel} entry from ${formatDate(entry.createdAt)}`}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                    <p className="entry-note">
-                      {entry.note || 'No note added for this check-in.'}
-                    </p>
-                  </>
-                )}
-              </li>
+              <HistoryEntryCard
+                key={entry.id}
+                deleteEntry={deleteEntry}
+                editingEntryId={editingEntryId}
+                editingMoodId={editingMoodId}
+                editingNote={editingNote}
+                entry={entry}
+                moodsList={moodsList}
+                setEditingEntryId={setEditingEntryId}
+                setEditingMoodId={setEditingMoodId}
+                setEditingNote={setEditingNote}
+                updateEntry={updateEntry}
+              />
             ))}
           </ul>
         )}
       </section>
-    </>
+    </div>
   )
 }
 
@@ -619,7 +707,7 @@ function TrendsPage({
   )
 
   return (
-    <>
+    <div className="page-stack trends-page">
       <section className="hero-panel trends-hero-panel">
         <div className="hero-copy">
           <p className="section-label">Mood trends</p>
@@ -811,7 +899,7 @@ function TrendsPage({
           )}
         </section>
       </section>
-    </>
+    </div>
   )
 }
 
@@ -1063,10 +1151,16 @@ function AppShell() {
     (quote) =>
       quote.text === quoteOfTheDay.text && quote.author === quoteOfTheDay.author,
   )
+  const todayLabel = formatLongDate()
 
   return (
     <div className="app-shell">
       <header className="app-header">
+        <div className="header-orbit" aria-hidden="true">
+          <span className="orbit-dot orbit-dot-large"></span>
+          <span className="orbit-dot orbit-dot-small"></span>
+          <span className="orbit-ring"></span>
+        </div>
         <div className="header-topline">
           <span className="sticker">little feelings diary</span>
           <span className="sparkle" aria-hidden="true">
@@ -1103,6 +1197,11 @@ function AppShell() {
           A soft little corner for logging feelings, saving kind words, and
           noticing how your days have been holding you.
         </p>
+        <HeaderDashboard
+          entriesCount={entries.length}
+          favoriteQuotesCount={favoriteQuotes.length}
+          todayLabel={todayLabel}
+        />
       </header>
 
       <main className="app-main">
@@ -1160,6 +1259,10 @@ function AppShell() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      <footer className="app-footer">
+        <p>Designed as a calm little ritual: log, reflect, and notice the pattern.</p>
+      </footer>
     </div>
   )
 }
