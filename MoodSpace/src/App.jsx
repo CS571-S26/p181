@@ -4,6 +4,40 @@ import './App.css'
 
 const STORAGE_KEY = 'moodspace.entries'
 const FAVORITES_KEY = 'moodspace.favoriteQuotes'
+const THEME_KEY = 'moodspace.theme'
+
+const themes = [
+  {
+    id: 'soft-light',
+    label: 'Soft Light',
+    description: 'Airy peach, teal, and sky tones.',
+    swatches: ['#fffaf6', '#3f8f86', '#6d97c7'],
+  },
+  {
+    id: 'moonlight',
+    label: 'Moonlight',
+    description: 'A quieter dark theme for late check-ins.',
+    swatches: ['#172332', '#8fb6d8', '#f0b77f'],
+  },
+  {
+    id: 'warm-sunset',
+    label: 'Warm Sunset',
+    description: 'Gentle coral and golden evening colors.',
+    swatches: ['#fff4e8', '#c96f4d', '#8b7bb8'],
+  },
+  {
+    id: 'sage-garden',
+    label: 'Sage Garden',
+    description: 'Leafy greens with a quiet cream backdrop.',
+    swatches: ['#f4f8ee', '#6f956f', '#d7a75f'],
+  },
+  {
+    id: 'berry-cloud',
+    label: 'Berry Cloud',
+    description: 'Soft lavender, berry, and misty blue.',
+    swatches: ['#f7f0fb', '#9b6aa3', '#73a8b9'],
+  },
+]
 
 const moods = [
   { id: 'happy', label: 'Happy', emoji: '\u{1F60A}', score: 2 },
@@ -423,8 +457,6 @@ function HomePage({
   handleSubmit,
   historyFilter,
   historyMessage,
-  importInputRef,
-  importMessage,
   moodsList,
   note,
   quoteIsSaved,
@@ -432,8 +464,6 @@ function HomePage({
   saveMessage,
   selectedMood,
   selectedMoodDetails,
-  triggerImport,
-  exportData,
   setEditingMoodId,
   setEditingEntryId,
   setEditingNote,
@@ -573,42 +603,6 @@ function HomePage({
                 ))}
               </ul>
             )}
-          </section>
-
-          <section className="card data-card">
-            <div className="card-heading">
-              <div>
-                <p className="section-label">Backup tools</p>
-                <h3>Export or import</h3>
-              </div>
-            </div>
-            <p className="section-copy data-copy">
-              Save your MoodSpace entries as a JSON file or restore them later.
-            </p>
-            <div className="data-actions">
-              <button type="button" className="ghost-button" onClick={exportData}>
-                Export data
-              </button>
-              <button type="button" className="ghost-button" onClick={triggerImport}>
-                Import data
-              </button>
-            </div>
-            <input
-              ref={importInputRef}
-              className="visually-hidden"
-              type="file"
-              accept="application/json"
-              onChange={importMessage.onImport}
-            />
-            {importMessage.text ? (
-              <p
-                className={`import-message ${
-                  importMessage.kind === 'error' ? 'import-message-error' : ''
-                }`}
-              >
-                {importMessage.text}
-              </p>
-            ) : null}
           </section>
         </div>
       </section>
@@ -903,6 +897,162 @@ function TrendsPage({
   )
 }
 
+function ThemePicker({ selectedTheme, setSelectedTheme }) {
+  return (
+    <div className="theme-picker" role="group" aria-label="Choose app theme">
+      {themes.map((theme) => (
+        <button
+          key={theme.id}
+          type="button"
+          className={`theme-option ${
+            selectedTheme === theme.id ? 'theme-option-active' : ''
+          }`}
+          onClick={() => setSelectedTheme(theme.id)}
+          aria-pressed={selectedTheme === theme.id}
+        >
+          <span className="theme-preview" aria-hidden="true">
+            <span
+              className="theme-preview-backdrop"
+              style={{
+                background: `linear-gradient(135deg, ${theme.swatches[0]}, ${theme.swatches[2]})`,
+              }}
+            ></span>
+            <span
+              className="theme-preview-panel"
+              style={{ background: theme.swatches[0] }}
+            ></span>
+            <span
+              className="theme-preview-line"
+              style={{ background: theme.swatches[1] }}
+            ></span>
+            <span
+              className="theme-preview-dot"
+              style={{ background: theme.swatches[2] }}
+            ></span>
+          </span>
+          <span className="theme-option-copy">
+            <strong>{theme.label}</strong>
+            <span>{theme.description}</span>
+          </span>
+          <span className="theme-swatches" aria-hidden="true">
+            {theme.swatches.map((swatch) => (
+              <span key={swatch} style={{ background: swatch }}></span>
+            ))}
+          </span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function DataTools({
+  exportData,
+  importInputRef,
+  importMessage,
+  triggerImport,
+}) {
+  return (
+    <section className="card data-card settings-card">
+      <div className="card-heading">
+        <div>
+          <p className="section-label">Backup tools</p>
+          <h3>Backup and restore</h3>
+        </div>
+      </div>
+      <p className="section-copy data-copy">
+        Save your MoodSpace entries as a JSON file or restore them later on this
+        browser.
+      </p>
+      <div className="data-actions">
+        <button type="button" className="ghost-button" onClick={exportData}>
+          Export data
+        </button>
+        <button type="button" className="ghost-button" onClick={triggerImport}>
+          Import data
+        </button>
+      </div>
+      <input
+        ref={importInputRef}
+        className="visually-hidden"
+        type="file"
+        accept="application/json"
+        onChange={importMessage.onImport}
+      />
+      {importMessage.text ? (
+        <p
+          className={`import-message ${
+            importMessage.kind === 'error' ? 'import-message-error' : ''
+          }`}
+        >
+          {importMessage.text}
+        </p>
+      ) : null}
+    </section>
+  )
+}
+
+function SettingsPage({
+  exportData,
+  importInputRef,
+  importMessage,
+  selectedTheme,
+  setSelectedTheme,
+  triggerImport,
+}) {
+  const currentTheme =
+    themes.find((theme) => theme.id === selectedTheme) ?? themes[0]
+
+  return (
+    <div className="page-stack settings-page">
+      <section className="hero-panel settings-hero-panel">
+        <div className="hero-copy">
+          <p className="section-label">Settings</p>
+          <h2>Shape the space around your check-ins</h2>
+          <p className="section-copy">
+            Choose a visual theme and keep a backup of the little reflections you
+            have saved here.
+          </p>
+          <p className="hero-whisper">Current theme: {currentTheme.label}</p>
+        </div>
+
+        <div className="hero-side">
+          <div className="mini-note">
+            <span className="mini-note-pin" aria-hidden="true"></span>
+            <p>privacy note</p>
+            <strong>Your entries stay in this browser unless you export them.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="settings-grid">
+        <section className="card settings-card theme-card">
+          <div className="card-heading">
+            <div>
+              <p className="section-label">Appearance</p>
+              <h3>Theme picker</h3>
+            </div>
+          </div>
+          <p className="section-copy data-copy">
+            Pick the palette that feels best for today. MoodSpace will remember it
+            for next time.
+          </p>
+          <ThemePicker
+            selectedTheme={selectedTheme}
+            setSelectedTheme={setSelectedTheme}
+          />
+        </section>
+
+        <DataTools
+          exportData={exportData}
+          importInputRef={importInputRef}
+          importMessage={importMessage}
+          triggerImport={triggerImport}
+        />
+      </section>
+    </div>
+  )
+}
+
 function AppShell() {
   const importInputRef = useRef(null)
   const [entries, setEntries] = useState(() => readStoredValue(STORAGE_KEY, []))
@@ -919,6 +1069,9 @@ function AppShell() {
   const [saveMessage, setSaveMessage] = useState('')
   const [historyMessage, setHistoryMessage] = useState('')
   const [importMessage, setImportMessage] = useState({ text: '', kind: 'info' })
+  const [selectedTheme, setSelectedTheme] = useState(() =>
+    readStoredValue(THEME_KEY, themes[0].id),
+  )
 
   const quoteOfTheDay = useMemo(() => getDailyQuote(), [])
   const selectedMoodDetails = moods.find((mood) => mood.id === selectedMood) ?? moods[0]
@@ -930,6 +1083,14 @@ function AppShell() {
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteQuotes))
   }, [favoriteQuotes])
+
+  useEffect(() => {
+    const themeExists = themes.some((theme) => theme.id === selectedTheme)
+    const nextTheme = themeExists ? selectedTheme : themes[0].id
+
+    document.documentElement.dataset.theme = nextTheme
+    window.localStorage.setItem(THEME_KEY, JSON.stringify(nextTheme))
+  }, [selectedTheme])
 
   const stats = useMemo(() => {
     const totalEntries = entries.length
@@ -1191,6 +1352,14 @@ function AppShell() {
             >
               Trends
             </NavLink>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `page-nav-link ${isActive ? 'page-nav-link-active' : ''}`
+              }
+            >
+              Settings
+            </NavLink>
           </nav>
         </div>
         <p className="header-copy">
@@ -1217,8 +1386,6 @@ function AppShell() {
                 handleSubmit={handleSubmit}
                 historyFilter={historyFilter}
                 historyMessage={historyMessage}
-                importInputRef={importInputRef}
-                importMessage={{ ...importMessage, onImport: handleImport }}
                 moodsList={moods}
                 note={note}
                 quoteIsSaved={quoteIsSaved}
@@ -1226,8 +1393,6 @@ function AppShell() {
                 saveMessage={saveMessage}
                 selectedMood={selectedMood}
                 selectedMoodDetails={selectedMoodDetails}
-                triggerImport={triggerImport}
-                exportData={exportData}
                 setEditingEntryId={setEditingEntryId}
                 setEditingMoodId={setEditingMoodId}
                 setEditingNote={setEditingNote}
@@ -1253,6 +1418,19 @@ function AppShell() {
                 stats={stats}
                 trendInsights={trendInsights}
                 dailySeries={dailySeries}
+              />
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <SettingsPage
+                exportData={exportData}
+                importInputRef={importInputRef}
+                importMessage={{ ...importMessage, onImport: handleImport }}
+                selectedTheme={selectedTheme}
+                setSelectedTheme={setSelectedTheme}
+                triggerImport={triggerImport}
               />
             }
           />

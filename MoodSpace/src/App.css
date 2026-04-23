@@ -582,7 +582,8 @@ blockquote,
 .filter-chip,
 .delete-entry-button,
 .entry-mood-chip,
-.mini-action-button {
+.mini-action-button,
+.theme-option {
   border: none;
   font: inherit;
   cursor: pointer;
@@ -619,7 +620,8 @@ blockquote,
 .filter-chip:hover,
 .delete-entry-button:hover,
 .entry-mood-chip:hover,
-.mini-action-button:hover {
+.mini-action-button:hover,
+.theme-option:hover {
   transform: translateY(-2px) rotate(0deg);
 }
 
@@ -676,6 +678,7 @@ blockquote,
 .delete-entry-button:focus-visible,
 .entry-mood-chip:focus-visible,
 .mini-action-button:focus-visible,
+.theme-option:focus-visible,
 .trend-line-hit:focus-visible {
   outline: 3px solid rgba(110, 175, 195, 0.28);
   outline-offset: 2px;
@@ -745,10 +748,11 @@ blockquote,
 blockquote {
   position: relative;
   margin-top: 0.95rem;
-  padding: 2.2rem 1.3rem 1.3rem;
+  padding: 3.25rem 1.3rem 1.3rem;
   border-radius: 28px;
   background: linear-gradient(180deg, #edf7ff, #fbffff);
   font-size: 1.05rem;
+  line-height: 1.65;
 }
 
 blockquote::before {
@@ -984,6 +988,145 @@ blockquote footer {
   margin-top: 1rem;
 }
 
+.settings-page .hero-panel {
+  background:
+    radial-gradient(circle at top right, rgba(255, 233, 207, 0.44), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(221, 232, 255, 0.46), transparent 28%),
+    rgba(252, 255, 253, 0.96);
+}
+
+.settings-page .hero-copy::after {
+  content: 'make it yours';
+  color: var(--teal-deep);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  gap: 1.35rem;
+  align-items: start;
+}
+
+.settings-card {
+  border-radius: 32px;
+}
+
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.95rem;
+  margin-top: 1.1rem;
+}
+
+.theme-option {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: stretch;
+  gap: 0.8rem;
+  width: 100%;
+  min-height: 215px;
+  padding: 0.85rem;
+  border-radius: 26px;
+  border: 1px solid rgba(140, 185, 197, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.44), transparent),
+    #f8fcff;
+  color: var(--ink);
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.theme-option-active {
+  border-color: rgba(92, 165, 158, 0.42);
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 36%),
+    linear-gradient(180deg, #eefaf4, #fffdf8);
+  box-shadow: 0 16px 28px rgba(119, 175, 152, 0.16);
+}
+
+.theme-preview {
+  position: relative;
+  display: block;
+  min-height: 84px;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 10px 18px rgba(91, 126, 147, 0.1);
+}
+
+.theme-preview-backdrop,
+.theme-preview-panel,
+.theme-preview-line,
+.theme-preview-dot {
+  position: absolute;
+}
+
+.theme-preview-backdrop {
+  inset: 0;
+}
+
+.theme-preview-panel {
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.7rem;
+  height: 2.6rem;
+  border-radius: 16px;
+  opacity: 0.9;
+  box-shadow: 0 8px 18px rgba(45, 65, 76, 0.16);
+}
+
+.theme-preview-line {
+  left: 1.25rem;
+  bottom: 2.25rem;
+  width: 48%;
+  height: 0.42rem;
+  border-radius: 999px;
+}
+
+.theme-preview-dot {
+  right: 1.2rem;
+  bottom: 1.45rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+}
+
+.theme-swatches {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.theme-swatches span {
+  min-width: 0;
+}
+
+.theme-option-copy {
+  display: grid;
+  align-content: start;
+  gap: 0.24rem;
+}
+
+.theme-option-copy strong {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.theme-option-copy span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .trends-layout {
   display: grid;
   grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
@@ -1140,6 +1283,224 @@ blockquote footer {
   font-size: 0.92rem;
 }
 
+:root[data-theme='moonlight'] .app-shell::before {
+  background: radial-gradient(circle, rgba(87, 129, 166, 0.34), transparent 68%);
+}
+
+:root[data-theme='moonlight'] .app-shell::after {
+  background: radial-gradient(circle, rgba(231, 154, 119, 0.24), transparent 68%);
+}
+
+:root[data-theme='moonlight'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(143, 182, 216, 0.18), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(240, 183, 127, 0.14), transparent 24%),
+    linear-gradient(145deg, rgba(24, 37, 50, 0.98), rgba(18, 30, 43, 0.96));
+  box-shadow: 0 28px 60px rgba(1, 7, 14, 0.3);
+}
+
+:root[data-theme='moonlight'] .page-nav,
+:root[data-theme='moonlight'] .dashboard-card,
+:root[data-theme='moonlight'] .hero-whisper,
+:root[data-theme='moonlight'] .mood-preview,
+:root[data-theme='moonlight'] .history-badge,
+:root[data-theme='moonlight'] .entry-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+:root[data-theme='moonlight'] .sticker,
+:root[data-theme='moonlight'] .mini-note,
+:root[data-theme='moonlight'] .stat-card,
+:root[data-theme='moonlight'] .overview-card,
+:root[data-theme='moonlight'] .form-card,
+:root[data-theme='moonlight'] .quote-card,
+:root[data-theme='moonlight'] .favorites-card,
+:root[data-theme='moonlight'] .data-card,
+:root[data-theme='moonlight'] .history-card,
+:root[data-theme='moonlight'] .trends-card,
+:root[data-theme='moonlight'] .settings-card,
+:root[data-theme='moonlight'] .mood-option,
+:root[data-theme='moonlight'] .filter-chip,
+:root[data-theme='moonlight'] .entry-mood-chip,
+:root[data-theme='moonlight'] blockquote,
+:root[data-theme='moonlight'] .favorites-list li,
+:root[data-theme='moonlight'] .entry-item,
+:root[data-theme='moonlight'] .trend-chart,
+:root[data-theme='moonlight'] .chart-tooltip-card,
+:root[data-theme='moonlight'] .trend-summary-card,
+:root[data-theme='moonlight'] .theme-option {
+  border-color: var(--panel-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    rgba(24, 37, 50, 0.9);
+  color: var(--muted);
+}
+
+:root[data-theme='moonlight'] .home-page .hero-panel,
+:root[data-theme='moonlight'] .trends-page .hero-panel,
+:root[data-theme='moonlight'] .settings-page .hero-panel {
+  background:
+    radial-gradient(circle at top right, rgba(143, 182, 216, 0.18), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(240, 183, 127, 0.12), transparent 28%),
+    rgba(24, 37, 50, 0.94);
+}
+
+:root[data-theme='moonlight'] .page-nav-link {
+  color: var(--muted);
+}
+
+:root[data-theme='moonlight'] .page-nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme='moonlight'] .page-nav-link-active,
+:root[data-theme='moonlight'] .filter-chip-active,
+:root[data-theme='moonlight'] .entry-mood-chip-active,
+:root[data-theme='moonlight'] .mini-action-button {
+  background: linear-gradient(135deg, #6bb9ad, #789fc7);
+  color: #101925;
+}
+
+:root[data-theme='moonlight'] .page-nav-link-active:hover,
+:root[data-theme='moonlight'] .page-nav-link-active:focus-visible {
+  color: #101925;
+}
+
+:root[data-theme='moonlight'] .mood-option-active,
+:root[data-theme='moonlight'] .ghost-button-active,
+:root[data-theme='moonlight'] .theme-option-active {
+  background:
+    linear-gradient(180deg, rgba(143, 201, 189, 0.18), rgba(240, 183, 127, 0.08)),
+    rgba(31, 49, 65, 0.95);
+  box-shadow: 0 16px 28px rgba(2, 8, 16, 0.22);
+}
+
+:root[data-theme='moonlight'] .ghost-button,
+:root[data-theme='moonlight'] .delete-entry-button,
+:root[data-theme='moonlight'] .mini-action-button-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+:root[data-theme='moonlight'] .notes-field textarea,
+:root[data-theme='moonlight'] .entry-edit-field textarea {
+  background: rgba(10, 18, 28, 0.7);
+  color: var(--ink);
+}
+
+:root[data-theme='moonlight'] .entry-mood strong,
+:root[data-theme='moonlight'] .trend-row-label,
+:root[data-theme='moonlight'] .theme-option-copy strong {
+  color: var(--ink);
+}
+
+:root[data-theme='moonlight'] .trend-line-point {
+  fill: #172332;
+}
+
+:root[data-theme='warm-sunset'] .app-shell::before {
+  background: radial-gradient(circle, rgba(255, 190, 126, 0.48), transparent 68%);
+}
+
+:root[data-theme='warm-sunset'] .app-shell::after {
+  background: radial-gradient(circle, rgba(139, 123, 184, 0.38), transparent 68%);
+}
+
+:root[data-theme='warm-sunset'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.72), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(255, 205, 161, 0.42), transparent 24%),
+    linear-gradient(145deg, rgba(255, 250, 245, 0.98), rgba(249, 239, 247, 0.94));
+}
+
+:root[data-theme='warm-sunset'] .page-nav-link-active,
+:root[data-theme='warm-sunset'] .primary-button,
+:root[data-theme='warm-sunset'] .filter-chip-active,
+:root[data-theme='warm-sunset'] .entry-mood-chip-active,
+:root[data-theme='warm-sunset'] .mini-action-button,
+:root[data-theme='warm-sunset'] .trend-bar-fill {
+  background: linear-gradient(135deg, var(--teal), var(--sky));
+}
+
+:root[data-theme='warm-sunset'] .page-nav-link-active:hover,
+:root[data-theme='warm-sunset'] .page-nav-link-active:focus-visible {
+  background: linear-gradient(135deg, #d88a66, #a494c9);
+  color: #392d3b;
+}
+
+:root[data-theme='warm-sunset'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='warm-sunset'] .trend-line-point {
+  stroke: var(--sky);
+}
+
+:root[data-theme='sage-garden'] .app-shell::before {
+  background: radial-gradient(circle, rgba(215, 167, 95, 0.4), transparent 68%);
+}
+
+:root[data-theme='sage-garden'] .app-shell::after {
+  background: radial-gradient(circle, rgba(111, 149, 111, 0.4), transparent 68%);
+}
+
+:root[data-theme='sage-garden'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.72), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(222, 229, 184, 0.42), transparent 24%),
+    linear-gradient(145deg, rgba(253, 254, 247, 0.98), rgba(238, 247, 236, 0.94));
+}
+
+:root[data-theme='sage-garden'] .page-nav-link-active,
+:root[data-theme='sage-garden'] .primary-button,
+:root[data-theme='sage-garden'] .filter-chip-active,
+:root[data-theme='sage-garden'] .entry-mood-chip-active,
+:root[data-theme='sage-garden'] .mini-action-button,
+:root[data-theme='sage-garden'] .trend-bar-fill {
+  background: linear-gradient(135deg, var(--teal), var(--warm));
+}
+
+:root[data-theme='sage-garden'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='sage-garden'] .trend-line-point {
+  stroke: var(--warm);
+}
+
+:root[data-theme='berry-cloud'] .app-shell::before {
+  background: radial-gradient(circle, rgba(155, 106, 163, 0.4), transparent 68%);
+}
+
+:root[data-theme='berry-cloud'] .app-shell::after {
+  background: radial-gradient(circle, rgba(115, 168, 185, 0.42), transparent 68%);
+}
+
+:root[data-theme='berry-cloud'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.72), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(238, 216, 248, 0.42), transparent 24%),
+    linear-gradient(145deg, rgba(254, 250, 255, 0.98), rgba(239, 248, 251, 0.94));
+}
+
+:root[data-theme='berry-cloud'] .page-nav-link-active,
+:root[data-theme='berry-cloud'] .primary-button,
+:root[data-theme='berry-cloud'] .filter-chip-active,
+:root[data-theme='berry-cloud'] .entry-mood-chip-active,
+:root[data-theme='berry-cloud'] .mini-action-button,
+:root[data-theme='berry-cloud'] .trend-bar-fill {
+  background: linear-gradient(135deg, var(--teal), var(--sky));
+}
+
+:root[data-theme='berry-cloud'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='berry-cloud'] .trend-line-point {
+  stroke: var(--sky);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -1162,7 +1523,8 @@ blockquote footer {
   .content-grid,
   .overview-strip,
   .header-dashboard,
-  .trends-layout {
+  .trends-layout,
+  .settings-grid {
     grid-template-columns: 1fr;
     flex-direction: column;
   }
