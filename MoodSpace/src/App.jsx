@@ -5,6 +5,7 @@ import './App.css'
 const STORAGE_KEY = 'moodspace.entries'
 const FAVORITES_KEY = 'moodspace.favoriteQuotes'
 const THEME_KEY = 'moodspace.theme'
+const CUSTOM_MOODS_KEY = 'moodspace.customMoods'
 
 const themes = [
   {
@@ -48,6 +49,99 @@ const moods = [
   { id: 'stressed', label: 'Stressed', emoji: '\u{1F635}', score: -1 },
 ]
 
+const emojiCategories = [
+  {
+    id: 'bright',
+    label: 'Bright',
+    emojis: [
+      '\u{1F60A}',
+      '\u{1F604}',
+      '\u{1F603}',
+      '\u{1F601}',
+      '\u{1F929}',
+      '\u{1F970}',
+      '\u{1F60D}',
+      '\u{1F917}',
+      '\u{1F973}',
+      '\u{1F60E}',
+      '\u{1F642}',
+      '\u{1F917}',
+    ],
+  },
+  {
+    id: 'calm',
+    label: 'Calm',
+    emojis: [
+      '\u{1F60C}',
+      '\u{1F607}',
+      '\u{1F917}',
+      '\u{1F979}',
+      '\u{1F642}',
+      '\u{1F60A}',
+      '\u{1F9D8}',
+      '\u{1F343}',
+      '\u{1F31E}',
+      '\u{1F319}',
+      '\u{2728}',
+      '\u{1F64F}',
+    ],
+  },
+  {
+    id: 'low',
+    label: 'Low',
+    emojis: [
+      '\u{1F614}',
+      '\u{1F615}',
+      '\u{1F61E}',
+      '\u{1F622}',
+      '\u{1F62D}',
+      '\u{1F97A}',
+      '\u{1F634}',
+      '\u{1F971}',
+      '\u{1F613}',
+      '\u{1F629}',
+      '\u{1F62B}',
+      '\u{1FAE5}',
+    ],
+  },
+  {
+    id: 'intense',
+    label: 'Intense',
+    emojis: [
+      '\u{1F620}',
+      '\u{1F621}',
+      '\u{1F624}',
+      '\u{1F630}',
+      '\u{1F631}',
+      '\u{1F628}',
+      '\u{1F635}',
+      '\u{1F92F}',
+      '\u{1F62E}\u{200D}\u{1F4A8}',
+      '\u{1F975}',
+      '\u{1F976}',
+      '\u{1F92C}',
+    ],
+  },
+  {
+    id: 'mixed',
+    label: 'Mixed',
+    emojis: [
+      '\u{1F914}',
+      '\u{1F928}',
+      '\u{1F610}',
+      '\u{1F611}',
+      '\u{1F636}',
+      '\u{1FAE0}',
+      '\u{1F633}',
+      '\u{1F644}',
+      '\u{1F62C}',
+      '\u{1F922}',
+      '\u{1F912}',
+      '\u{1F974}',
+    ],
+  },
+]
+
 const quotes = [
   {
     text: 'You do not have to carry the whole week at once. Just this moment.',
@@ -70,6 +164,8 @@ const quotes = [
     author: 'MoodSpace',
   },
 ]
+
+const defaultMoodIds = new Set(moods.map((mood) => mood.id))
 
 const homeHighlights = [
   {
@@ -118,6 +214,54 @@ function formatShortDate(dateKey) {
     month: 'short',
     day: 'numeric',
   }).format(new Date(`${dateKey}T00:00:00`))
+}
+
+function normalizeMoodLabel(label) {
+  return label.trim().replace(/\s+/g, ' ')
+}
+
+function createMoodId(label) {
+  const baseId = normalizeMoodLabel(label)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  return `custom-${baseId || crypto.randomUUID()}`
+}
+
+function normalizeCustomMoods(rawMoods) {
+  if (!Array.isArray(rawMoods)) {
+    return []
+  }
+
+  const seenIds = new Set(defaultMoodIds)
+
+  return rawMoods.reduce((normalizedMoods, mood) => {
+    const label =
+      typeof mood?.label === 'string' ? normalizeMoodLabel(mood.label) : ''
+    const emoji = typeof mood?.emoji === 'string' ? mood.emoji.trim() : ''
+    const score = Number(mood?.score)
+    const rawId =
+      typeof mood?.id === 'string' && mood.id.trim()
+        ? mood.id.trim()
+        : createMoodId(label)
+
+    if (!label || !emoji || Number.isNaN(score) || seenIds.has(rawId)) {
+      return normalizedMoods
+    }
+
+    const safeScore = Math.max(-2, Math.min(2, Math.round(score)))
+    seenIds.add(rawId)
+    normalizedMoods.push({
+      id: rawId,
+      label,
+      emoji,
+      score: safeScore,
+      custom: true,
+    })
+
+    return normalizedMoods
+  }, [])
 }
 
 function formatLongDate(date = new Date()) {
@@ -266,14 +410,15 @@ function buildChartPoints(series, width, height, padding) {
     .filter(Boolean)
 }
 
-function normalizeImportedEntries(rawEntries) {
+function normalizeImportedEntries(rawEntries, availableMoods = moods) {
   if (!Array.isArray(rawEntries)) {
     return []
   }
 
   return rawEntries
     .map((entry) => {
-      const fallbackMood = moods.find((mood) => mood.id === entry?.moodId) ?? moods[0]
+      const fallbackMood =
+        availableMoods.find((mood) => mood.id === entry?.moodId) ?? moods[0]
       const entryDate = new Date(entry?.createdAt)
 
       return {
@@ -445,6 +590,51 @@ function HeaderDashboard({ entriesCount, favoriteQuotesCount, todayLabel }) {
         <strong>{favoriteQuotesCount}</strong>
         <p>Kind words you wanted to keep nearby.</p>
       </article>
+    </div>
+  )
+}
+
+function ConfirmDeleteDialog({ entry, onCancel, onConfirm }) {
+  if (!entry) {
+    return null
+  }
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section
+        className="confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-dialog-title"
+      >
+        <span className="confirm-icon" aria-hidden="true">
+          {entry.emoji}
+        </span>
+        <div>
+          <p className="section-label">Delete check-in</p>
+          <h3 id="delete-dialog-title">Remove this memory?</h3>
+          <p className="section-copy">
+            This will permanently delete your {entry.moodLabel.toLowerCase()} entry
+            from {formatDate(entry.createdAt)}.
+          </p>
+        </div>
+        <div className="confirm-actions">
+          <button
+            type="button"
+            className="mini-action-button mini-action-button-danger"
+            onClick={onConfirm}
+          >
+            Delete entry
+          </button>
+          <button
+            type="button"
+            className="mini-action-button mini-action-button-ghost"
+            onClick={onCancel}
+          >
+            Keep it
+          </button>
+        </div>
+      </section>
     </div>
   )
 }
@@ -991,12 +1181,184 @@ function DataTools({
   )
 }
 
+function CustomMoodManager({
+  customMoodDraft,
+  customMoodMessage,
+  customMoods,
+  entries,
+  onAddCustomMood,
+  onDeleteCustomMood,
+  setCustomMoodDraft,
+}) {
+  const [activeEmojiCategory, setActiveEmojiCategory] = useState(
+    emojiCategories[0].id,
+  )
+  const activeEmojiChoices =
+    emojiCategories.find((category) => category.id === activeEmojiCategory)
+      ?.emojis ?? emojiCategories[0].emojis
+  const customMoodUsage = useMemo(
+    () =>
+      entries.reduce((usage, entry) => {
+        usage[entry.moodId] = (usage[entry.moodId] || 0) + 1
+        return usage
+      }, {}),
+    [entries],
+  )
+
+  return (
+    <section className="card settings-card custom-moods-card">
+      <div className="card-heading">
+        <div>
+          <p className="section-label">Personal moods</p>
+          <h3>Custom mood buttons</h3>
+        </div>
+      </div>
+      <p className="section-copy data-copy">
+        Add your own mood options for check-ins, history filters, and trend
+        breakdowns.
+      </p>
+
+      <form className="custom-mood-form" onSubmit={onAddCustomMood}>
+        <div className="custom-emoji-picker">
+          <div className="custom-emoji-heading">
+            <span className="field-label">Emoji</span>
+            <span className="custom-emoji-current" aria-live="polite">
+              {customMoodDraft.emoji || '\u{1F642}'}
+            </span>
+          </div>
+          <div
+            className="custom-emoji-tabs"
+            role="tablist"
+            aria-label="Emoji categories"
+          >
+            {emojiCategories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                className={`custom-emoji-tab ${
+                  activeEmojiCategory === category.id
+                    ? 'custom-emoji-tab-active'
+                    : ''
+                }`}
+                onClick={() => setActiveEmojiCategory(category.id)}
+                role="tab"
+                aria-selected={activeEmojiCategory === category.id}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+          <div className="custom-emoji-grid" role="group" aria-label="Choose mood emoji">
+            {activeEmojiChoices.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                className={`custom-emoji-button ${
+                  customMoodDraft.emoji === emoji ? 'custom-emoji-button-active' : ''
+                }`}
+                onClick={() =>
+                  setCustomMoodDraft((draft) => ({
+                    ...draft,
+                    emoji,
+                  }))
+                }
+                aria-pressed={customMoodDraft.emoji === emoji}
+                aria-label={`Use ${emoji} emoji`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label>
+          <span className="field-label">Label</span>
+          <input
+            maxLength="24"
+            placeholder="Hopeful"
+            value={customMoodDraft.label}
+            onChange={(event) =>
+              setCustomMoodDraft((draft) => ({
+                ...draft,
+                label: event.target.value,
+              }))
+            }
+          />
+        </label>
+        <label>
+          <span className="field-label">Score</span>
+          <select
+            value={customMoodDraft.score}
+            onChange={(event) =>
+              setCustomMoodDraft((draft) => ({
+                ...draft,
+                score: event.target.value,
+              }))
+            }
+          >
+            <option value="2">Very light</option>
+            <option value="1">Light</option>
+            <option value="0">Mixed</option>
+            <option value="-1">Heavy</option>
+            <option value="-2">Very heavy</option>
+          </select>
+        </label>
+        <button type="submit" className="primary-button">
+          Add mood
+        </button>
+      </form>
+
+      {customMoodMessage ? (
+        <p className="import-message">{customMoodMessage}</p>
+      ) : null}
+
+      {customMoods.length === 0 ? (
+        <p className="empty-state custom-moods-empty">
+          Your custom moods will appear here after you add one.
+        </p>
+      ) : (
+        <ul className="custom-mood-list">
+          {customMoods.map((mood) => {
+            const usageCount = customMoodUsage[mood.id] || 0
+            return (
+              <li key={mood.id}>
+                <span className="custom-mood-pill">
+                  <span>{mood.emoji}</span>
+                  <strong>{mood.label}</strong>
+                </span>
+                <span className="custom-mood-meta">
+                  {usageCount} {usageCount === 1 ? 'entry' : 'entries'}
+                </span>
+                <button
+                  type="button"
+                  className="delete-entry-button"
+                  onClick={() => onDeleteCustomMood(mood.id)}
+                  disabled={usageCount > 0}
+                  aria-label={`Delete ${mood.label} custom mood`}
+                >
+                  Delete
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 function SettingsPage({
+  customMoodDraft,
+  customMoodMessage,
+  customMoods,
+  entries,
   exportData,
   importInputRef,
   importMessage,
+  onAddCustomMood,
+  onDeleteCustomMood,
   selectedTheme,
   setSelectedTheme,
+  setCustomMoodDraft,
   triggerImport,
 }) {
   const currentTheme =
@@ -1048,6 +1410,16 @@ function SettingsPage({
           importMessage={importMessage}
           triggerImport={triggerImport}
         />
+
+        <CustomMoodManager
+          customMoodDraft={customMoodDraft}
+          customMoodMessage={customMoodMessage}
+          customMoods={customMoods}
+          entries={entries}
+          onAddCustomMood={onAddCustomMood}
+          onDeleteCustomMood={onDeleteCustomMood}
+          setCustomMoodDraft={setCustomMoodDraft}
+        />
       </section>
     </div>
   )
@@ -1059,22 +1431,34 @@ function AppShell() {
   const [favoriteQuotes, setFavoriteQuotes] = useState(() =>
     readStoredValue(FAVORITES_KEY, []),
   )
+  const [customMoods, setCustomMoods] = useState(() =>
+    normalizeCustomMoods(readStoredValue(CUSTOM_MOODS_KEY, [])),
+  )
   const [selectedMood, setSelectedMood] = useState(moods[0].id)
   const [historyFilter, setHistoryFilter] = useState('all')
   const [editingEntryId, setEditingEntryId] = useState(null)
   const [editingMoodId, setEditingMoodId] = useState(moods[0].id)
   const [editingNote, setEditingNote] = useState('')
+  const [entryPendingDelete, setEntryPendingDelete] = useState(null)
   const [activeChartPoint, setActiveChartPoint] = useState(null)
   const [note, setNote] = useState('')
   const [saveMessage, setSaveMessage] = useState('')
   const [historyMessage, setHistoryMessage] = useState('')
   const [importMessage, setImportMessage] = useState({ text: '', kind: 'info' })
+  const [customMoodMessage, setCustomMoodMessage] = useState('')
+  const [customMoodDraft, setCustomMoodDraft] = useState({
+    emoji: '',
+    label: '',
+    score: '1',
+  })
   const [selectedTheme, setSelectedTheme] = useState(() =>
     readStoredValue(THEME_KEY, themes[0].id),
   )
 
   const quoteOfTheDay = useMemo(() => getDailyQuote(), [])
-  const selectedMoodDetails = moods.find((mood) => mood.id === selectedMood) ?? moods[0]
+  const moodsList = useMemo(() => [...moods, ...customMoods], [customMoods])
+  const selectedMoodDetails =
+    moodsList.find((mood) => mood.id === selectedMood) ?? moods[0]
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
@@ -1083,6 +1467,10 @@ function AppShell() {
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteQuotes))
   }, [favoriteQuotes])
+
+  useEffect(() => {
+    window.localStorage.setItem(CUSTOM_MOODS_KEY, JSON.stringify(customMoods))
+  }, [customMoods])
 
   useEffect(() => {
     const themeExists = themes.some((theme) => theme.id === selectedTheme)
@@ -1118,7 +1506,7 @@ function AppShell() {
         topMood: null,
         latestEntry: null,
         longestStreak: 0,
-        moodBreakdown: moods.map((mood) => ({
+        moodBreakdown: moodsList.map((mood) => ({
           ...mood,
           count: 0,
           percentage: 0,
@@ -1139,7 +1527,7 @@ function AppShell() {
       return accumulator
     }, {})
 
-    const moodBreakdown = moods.map((mood) => {
+    const moodBreakdown = moodsList.map((mood) => {
       const count = counts[mood.id] || 0
       return {
         ...mood,
@@ -1157,7 +1545,7 @@ function AppShell() {
       longestStreak: getLongestStreak(entries),
       moodBreakdown,
     }
-  }, [entries])
+  }, [entries, moodsList])
 
   const dailySeries = useMemo(() => buildDailySeries(entries, 14), [entries])
 
@@ -1168,6 +1556,21 @@ function AppShell() {
 
     return entries.filter((entry) => entry.moodId === historyFilter)
   }, [entries, historyFilter])
+
+  useEffect(() => {
+    if (!moodsList.some((mood) => mood.id === selectedMood)) {
+      setSelectedMood(moods[0].id)
+    }
+  }, [moodsList, selectedMood])
+
+  useEffect(() => {
+    if (
+      historyFilter !== 'all' &&
+      !moodsList.some((mood) => mood.id === historyFilter)
+    ) {
+      setHistoryFilter('all')
+    }
+  }, [historyFilter, moodsList])
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -1206,21 +1609,32 @@ function AppShell() {
     })
   }
 
-  function deleteEntry(entryId) {
+  function requestDeleteEntry(entryId) {
+    const entryToDelete = entries.find((entry) => entry.id === entryId)
+    setEntryPendingDelete(entryToDelete ?? null)
+  }
+
+  function confirmDeleteEntry() {
+    if (!entryPendingDelete) {
+      return
+    }
+
+    const entryId = entryPendingDelete.id
     if (editingEntryId === entryId) {
       setEditingEntryId(null)
-      setEditingMoodId(moods[0].id)
+      setEditingMoodId(moodsList[0].id)
       setEditingNote('')
     }
     setEntries((currentEntries) =>
       currentEntries.filter((entry) => entry.id !== entryId),
     )
+    setEntryPendingDelete(null)
     setHistoryMessage('Entry deleted from your memory wall.')
     setSaveMessage('')
   }
 
   function updateEntry(entryId) {
-    const chosenMood = moods.find((mood) => mood.id === editingMoodId) ?? moods[0]
+    const chosenMood = moodsList.find((mood) => mood.id === editingMoodId) ?? moods[0]
 
     setEntries((currentEntries) =>
       currentEntries.map((entry) =>
@@ -1238,10 +1652,66 @@ function AppShell() {
     )
 
     setEditingEntryId(null)
-    setEditingMoodId(moods[0].id)
+    setEditingMoodId(moodsList[0].id)
     setEditingNote('')
     setHistoryMessage('Entry updated.')
     setSaveMessage('')
+  }
+
+  function addCustomMood(event) {
+    event.preventDefault()
+
+    const label = normalizeMoodLabel(customMoodDraft.label)
+    const emoji = customMoodDraft.emoji.trim()
+    const score = Number(customMoodDraft.score)
+
+    if (!emoji || !label) {
+      setCustomMoodMessage('Add both an emoji and a label for the new mood.')
+      return
+    }
+
+    const duplicateLabel = moodsList.some(
+      (mood) => mood.label.toLowerCase() === label.toLowerCase(),
+    )
+
+    if (duplicateLabel) {
+      setCustomMoodMessage('That mood already exists.')
+      return
+    }
+
+    let moodId = createMoodId(label)
+    let suffix = 2
+    while (moodsList.some((mood) => mood.id === moodId)) {
+      moodId = `${createMoodId(label)}-${suffix}`
+      suffix += 1
+    }
+
+    const normalizedMood = {
+      id: moodId,
+      label,
+      emoji,
+      score: Math.max(-2, Math.min(2, Math.round(score))),
+      custom: true,
+    }
+
+    setCustomMoods((currentMoods) => [...currentMoods, normalizedMood])
+    setSelectedMood(normalizedMood.id)
+    setCustomMoodDraft({ emoji: '', label: '', score: '1' })
+    setCustomMoodMessage(`Added ${normalizedMood.emoji} ${normalizedMood.label}.`)
+  }
+
+  function deleteCustomMood(moodId) {
+    const moodInUse = entries.some((entry) => entry.moodId === moodId)
+
+    if (moodInUse) {
+      setCustomMoodMessage('Custom moods with saved entries cannot be deleted yet.')
+      return
+    }
+
+    setCustomMoods((currentMoods) =>
+      currentMoods.filter((mood) => mood.id !== moodId),
+    )
+    setCustomMoodMessage('Custom mood deleted.')
   }
 
   function exportData() {
@@ -1249,6 +1719,7 @@ function AppShell() {
       exportedAt: new Date().toISOString(),
       entries,
       favoriteQuotes,
+      customMoods,
     }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -1278,7 +1749,11 @@ function AppShell() {
     try {
       const rawText = await file.text()
       const parsed = JSON.parse(rawText)
-      const importedEntries = normalizeImportedEntries(parsed?.entries)
+      const importedCustomMoods = normalizeCustomMoods(parsed?.customMoods)
+      const importedEntries = normalizeImportedEntries(parsed?.entries, [
+        ...moods,
+        ...importedCustomMoods,
+      ])
       const importedQuotes = Array.isArray(parsed?.favoriteQuotes)
         ? parsed.favoriteQuotes.filter(
             (quote) =>
@@ -1288,12 +1763,14 @@ function AppShell() {
 
       setEntries(importedEntries)
       setFavoriteQuotes(importedQuotes)
+      setCustomMoods(importedCustomMoods)
       setEditingEntryId(null)
-      setEditingMoodId(moods[0].id)
+      setEditingMoodId(moodsList[0].id)
       setEditingNote('')
+      setSelectedMood(moods[0].id)
       setHistoryFilter('all')
       setImportMessage({
-        text: `Imported ${importedEntries.length} entries and ${importedQuotes.length} saved quotes.`,
+        text: `Imported ${importedEntries.length} entries, ${importedQuotes.length} saved quotes, and ${importedCustomMoods.length} custom moods.`,
         kind: 'info',
       })
       setHistoryMessage('Your MoodSpace data was restored.')
@@ -1386,7 +1863,7 @@ function AppShell() {
                 handleSubmit={handleSubmit}
                 historyFilter={historyFilter}
                 historyMessage={historyMessage}
-                moodsList={moods}
+                moodsList={moodsList}
                 note={note}
                 quoteIsSaved={quoteIsSaved}
                 quoteOfTheDay={quoteOfTheDay}
@@ -1401,7 +1878,7 @@ function AppShell() {
                 setSelectedMood={setSelectedMood}
                 stats={stats}
                 toggleFavoriteQuote={toggleFavoriteQuote}
-                deleteEntry={deleteEntry}
+                deleteEntry={requestDeleteEntry}
                 updateEntry={updateEntry}
                 editingMoodId={editingMoodId}
                 editingNote={editingNote}
@@ -1425,11 +1902,18 @@ function AppShell() {
             path="/settings"
             element={
               <SettingsPage
+                customMoodDraft={customMoodDraft}
+                customMoodMessage={customMoodMessage}
+                customMoods={customMoods}
+                entries={entries}
                 exportData={exportData}
                 importInputRef={importInputRef}
                 importMessage={{ ...importMessage, onImport: handleImport }}
+                onAddCustomMood={addCustomMood}
+                onDeleteCustomMood={deleteCustomMood}
                 selectedTheme={selectedTheme}
                 setSelectedTheme={setSelectedTheme}
+                setCustomMoodDraft={setCustomMoodDraft}
                 triggerImport={triggerImport}
               />
             }
@@ -1437,6 +1921,12 @@ function AppShell() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      <ConfirmDeleteDialog
+        entry={entryPendingDelete}
+        onCancel={() => setEntryPendingDelete(null)}
+        onConfirm={confirmDeleteEntry}
+      />
 
       <footer className="app-footer">
         <p>Designed as a calm little ritual: log, reflect, and notice the pattern.</p>
