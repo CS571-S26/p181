@@ -540,6 +540,91 @@ blockquote,
   gap: 1.5rem;
 }
 
+.calendar-card {
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 249, 238, 0.32), transparent 18%),
+    rgba(251, 255, 255, 0.95);
+}
+
+.calendar-heading {
+  align-items: flex-start;
+}
+
+.calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+  gap: 0.55rem;
+  margin-top: 1.15rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+}
+
+.calendar-grid {
+  gap: 0.55rem;
+  margin-top: 0.55rem;
+}
+
+.calendar-day {
+  display: grid;
+  align-content: space-between;
+  min-height: 88px;
+  padding: 0.65rem;
+  border-radius: 18px;
+  border: 1px solid rgba(141, 187, 196, 0.14);
+  background: linear-gradient(180deg, #f8fcff, #eef8fb);
+}
+
+.calendar-day-muted {
+  opacity: 0.46;
+}
+
+.calendar-day-number {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.calendar-mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  min-height: 1.8rem;
+}
+
+.calendar-mood-row span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 0.9rem;
+}
+
+.calendar-more {
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .sidebar-stack {
   display: flex;
   flex-direction: column;
@@ -835,6 +920,37 @@ blockquote footer {
 .history-toolbar {
   align-items: flex-start;
   margin-top: 1.15rem;
+}
+
+.history-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.36fr);
+  gap: 0.85rem;
+  margin-top: 1.15rem;
+}
+
+.history-search-field,
+.history-date-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.history-search-field input,
+.history-date-field select {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 18px;
+  border: 1px solid rgba(137, 187, 200, 0.34);
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--ink);
+  padding: 0.7rem 0.85rem;
+  box-shadow: inset 0 1px 2px rgba(109, 147, 161, 0.08);
+}
+
+.history-search-field input:focus-visible,
+.history-date-field select:focus-visible {
+  outline: 3px solid rgba(110, 175, 195, 0.28);
+  outline-offset: 2px;
 }
 
 .filter-row {
@@ -1549,6 +1665,7 @@ blockquote footer {
 :root[data-theme='moonlight'] .data-card,
 :root[data-theme='moonlight'] .history-card,
 :root[data-theme='moonlight'] .trends-card,
+:root[data-theme='moonlight'] .calendar-card,
 :root[data-theme='moonlight'] .settings-card,
 :root[data-theme='moonlight'] .mood-option,
 :root[data-theme='moonlight'] .filter-chip,
@@ -1558,6 +1675,7 @@ blockquote footer {
 :root[data-theme='moonlight'] blockquote,
 :root[data-theme='moonlight'] .favorites-list li,
 :root[data-theme='moonlight'] .entry-item,
+:root[data-theme='moonlight'] .calendar-day,
 :root[data-theme='moonlight'] .custom-mood-list li,
 :root[data-theme='moonlight'] .trend-chart,
 :root[data-theme='moonlight'] .chart-tooltip-card,
@@ -1621,6 +1739,8 @@ blockquote footer {
 
 :root[data-theme='moonlight'] .notes-field textarea,
 :root[data-theme='moonlight'] .entry-edit-field textarea,
+:root[data-theme='moonlight'] .history-search-field input,
+:root[data-theme='moonlight'] .history-date-field select,
 :root[data-theme='moonlight'] .custom-mood-form input,
 :root[data-theme='moonlight'] .custom-mood-form select {
   background: rgba(10, 18, 28, 0.7);
@@ -1787,6 +1907,10 @@ blockquote footer {
     flex-direction: column;
   }
 
+  .history-search-row {
+    grid-template-columns: 1fr;
+  }
+
   .filter-summary {
     white-space: normal;
   }
@@ -1798,6 +1922,10 @@ blockquote footer {
   .chart-scale {
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: 1fr;
+  }
+
+  .calendar-day {
+    min-height: 76px;
   }
 
   .custom-mood-form {
@@ -1865,6 +1993,27 @@ blockquote footer {
   .trend-row {
     grid-template-columns: 1fr;
     justify-items: start;
+  }
+
+  .calendar-weekdays {
+    gap: 0.25rem;
+    font-size: 0.68rem;
+  }
+
+  .calendar-grid {
+    gap: 0.3rem;
+  }
+
+  .calendar-day {
+    min-height: 58px;
+    padding: 0.42rem;
+    border-radius: 14px;
+  }
+
+  .calendar-mood-row span {
+    min-width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.75rem;
   }
 
   .custom-mood-form,
