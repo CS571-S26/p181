@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { emojiCategories, homeHighlights, themes } from '../utils/data'
 import {
   buildChartPoints,
@@ -280,6 +280,59 @@ function MoodCalendar({ entries }) {
 }
 
 function ConfirmDeleteDialog({ entry, onCancel, onConfirm }) {
+  const dialogRef = useRef(null)
+  const cancelButtonRef = useRef(null)
+  const previousFocusRef = useRef(null)
+
+  useEffect(() => {
+    if (!entry) {
+      return undefined
+    }
+
+    previousFocusRef.current = document.activeElement
+    cancelButtonRef.current?.focus()
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        onCancel()
+        return
+      }
+
+      if (event.key !== 'Tab') {
+        return
+      }
+
+      const focusableElements = dialogRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+      const focusable = Array.from(focusableElements || []).filter(
+        (element) => !element.disabled && element.offsetParent !== null,
+      )
+
+      if (focusable.length === 0) {
+        return
+      }
+
+      const firstElement = focusable[0]
+      const lastElement = focusable[focusable.length - 1]
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      previousFocusRef.current?.focus?.()
+    }
+  }, [entry, onCancel])
+
   if (!entry) {
     return null
   }
@@ -287,6 +340,7 @@ function ConfirmDeleteDialog({ entry, onCancel, onConfirm }) {
   return (
     <div className="modal-backdrop" role="presentation">
       <section
+        ref={dialogRef}
         className="confirm-dialog"
         role="dialog"
         aria-modal="true"
@@ -312,6 +366,7 @@ function ConfirmDeleteDialog({ entry, onCancel, onConfirm }) {
             Delete entry
           </button>
           <button
+            ref={cancelButtonRef}
             type="button"
             className="mini-action-button mini-action-button-ghost"
             onClick={onCancel}
@@ -881,6 +936,7 @@ function DataTools({
         className="visually-hidden"
         type="file"
         accept="application/json"
+        aria-label="Choose a MoodSpace backup file to import"
         onChange={importMessage.onImport}
       />
       {importMessage.text ? (
