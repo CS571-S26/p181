@@ -2,10 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { emojiCategories, homeHighlights, themes } from '../utils/data'
 import {
   buildChartPoints,
+  buildDailySeries,
   buildLinePath,
   formatDate,
   getLocalDateKey,
 } from '../utils/mood'
+
+const chartRangeOptions = [
+  { days: 14, label: '2W' },
+  { days: 30, label: '1M' },
+  { days: 60, label: '2M' },
+  { days: 90, label: '3M' },
+]
 
 function formatMonthLabel(date) {
   return new Intl.DateTimeFormat('en-US', {
@@ -645,8 +653,12 @@ function TrendsPage({
   setActiveChartPoint,
   stats,
   trendInsights,
-  dailySeries,
 }) {
+  const [chartRangeDays, setChartRangeDays] = useState(14)
+  const dailySeries = useMemo(
+    () => buildDailySeries(entries, chartRangeDays),
+    [chartRangeDays, entries],
+  )
   const chartWidth = 720
   const chartHeight = 260
   const chartPadding = 28
@@ -657,6 +669,7 @@ function TrendsPage({
     chartHeight,
     chartPadding,
   )
+  const labelInterval = Math.max(1, Math.ceil(dailySeries.length / 14))
 
   return (
     <div className="page-stack trends-page">
@@ -708,8 +721,30 @@ function TrendsPage({
               <p className="section-label">Over time</p>
               <h3>Mood line graph</h3>
               <p className="section-copy history-copy">
-                Daily averages from your most recent two weeks of check-ins.
+                Daily averages from your selected check-in window.
               </p>
+            </div>
+            <div
+              className="chart-range-controls"
+              role="group"
+              aria-label="Choose mood graph date range"
+            >
+              {chartRangeOptions.map((option) => (
+                <button
+                  key={option.days}
+                  type="button"
+                  className={`chart-range-button ${
+                    chartRangeDays === option.days ? 'chart-range-button-active' : ''
+                  }`}
+                  onClick={() => {
+                    setChartRangeDays(option.days)
+                    setActiveChartPoint(null)
+                  }}
+                  aria-pressed={chartRangeDays === option.days}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -787,9 +822,16 @@ function TrendsPage({
                     </>
                   )}
                 </div>
-                <div className="chart-label-row">
-                  {dailySeries.map((point) => (
-                    <span key={point.key}>{point.label}</span>
+                <div
+                  className="chart-label-row"
+                  style={{ '--chart-label-count': dailySeries.length }}
+                >
+                  {dailySeries.map((point, index) => (
+                    <span key={point.key}>
+                      {index % labelInterval === 0 || index === dailySeries.length - 1
+                        ? point.label
+                        : ''}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -869,35 +911,17 @@ function ThemePicker({ selectedTheme, setSelectedTheme }) {
           }`}
           onClick={() => setSelectedTheme(theme.id)}
           aria-pressed={selectedTheme === theme.id}
+          title={`${theme.label}: ${theme.description}`}
+          aria-label={`Choose ${theme.label} theme. ${theme.description}`}
         >
-          <span className="theme-preview" aria-hidden="true">
-            <span
-              className="theme-preview-backdrop"
-              style={{
-                background: `linear-gradient(135deg, ${theme.swatches[0]}, ${theme.swatches[2]})`,
-              }}
-            ></span>
-            <span
-              className="theme-preview-panel"
-              style={{ background: theme.swatches[0] }}
-            ></span>
-            <span
-              className="theme-preview-line"
-              style={{ background: theme.swatches[1] }}
-            ></span>
-            <span
-              className="theme-preview-dot"
-              style={{ background: theme.swatches[2] }}
-            ></span>
-          </span>
-          <span className="theme-option-copy">
-            <strong>{theme.label}</strong>
-            <span>{theme.description}</span>
-          </span>
           <span className="theme-swatches" aria-hidden="true">
             {theme.swatches.map((swatch) => (
               <span key={swatch} style={{ background: swatch }}></span>
             ))}
+          </span>
+          <span className="theme-tooltip" role="tooltip">
+            <strong>{theme.label}</strong>
+            <span>{theme.description}</span>
           </span>
         </button>
       ))}

@@ -117,6 +117,94 @@
   --panel-shadow: 0 22px 44px rgba(102, 90, 128, 0.12);
 }
 
+:root[data-theme='sea-glass'] {
+  --page-background:
+    radial-gradient(circle at 14% 10%, rgba(114, 205, 206, 0.42), transparent 22%),
+    radial-gradient(circle at 84% 14%, rgba(67, 118, 170, 0.34), transparent 20%),
+    radial-gradient(circle at 48% 100%, rgba(199, 237, 229, 0.78), transparent 30%),
+    linear-gradient(180deg, #eefbfa 0%, #e8f1f7 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(236, 255, 253, 0.52), transparent 42%);
+  --ink: #18313d;
+  --muted: #526b76;
+  --teal: #247c8f;
+  --teal-deep: #1f6675;
+  --sky: #284d77;
+  --warm: #d39f62;
+  --coral: #c96d5a;
+  --panel: rgba(250, 255, 255, 0.94);
+  --panel-border: rgba(44, 124, 143, 0.22);
+  --panel-shadow: 0 22px 44px rgba(42, 100, 126, 0.12);
+}
+
+:root[data-theme='citrus-pop'] {
+  --page-background:
+    radial-gradient(circle at 12% 10%, rgba(255, 226, 99, 0.46), transparent 22%),
+    radial-gradient(circle at 84% 12%, rgba(232, 93, 79, 0.3), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(130, 196, 112, 0.62), transparent 30%),
+    linear-gradient(180deg, #fffbe6 0%, #edf7e8 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(255, 255, 236, 0.54), transparent 42%);
+  --ink: #283416;
+  --muted: #5d6845;
+  --teal: #2f7d4f;
+  --teal-deep: #32683b;
+  --sky: #e85d4f;
+  --warm: #d99f22;
+  --coral: #d4483f;
+  --panel: rgba(255, 254, 241, 0.94);
+  --panel-border: rgba(112, 146, 54, 0.22);
+  --panel-shadow: 0 22px 44px rgba(105, 126, 62, 0.12);
+}
+
+:root[data-theme='graphite'] {
+  --page-background:
+    radial-gradient(circle at 14% 10%, rgba(47, 128, 237, 0.18), transparent 22%),
+    radial-gradient(circle at 84% 12%, rgba(47, 55, 66, 0.14), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(158, 171, 184, 0.34), transparent 30%),
+    linear-gradient(180deg, #f4f6f8 0%, #e8edf2 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.48), transparent 42%);
+  --ink: #202833;
+  --muted: #5b6673;
+  --teal: #2f3742;
+  --teal-deep: #343b45;
+  --sky: #2f80ed;
+  --warm: #8a6a3d;
+  --coral: #b44e5f;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-border: rgba(85, 99, 116, 0.22);
+  --panel-shadow: 0 22px 44px rgba(62, 75, 91, 0.12);
+}
+
+:root[data-theme='rose-ink'] {
+  --page-background:
+    radial-gradient(circle at 12% 12%, rgba(214, 86, 127, 0.32), transparent 22%),
+    radial-gradient(circle at 84% 12%, rgba(111, 49, 85, 0.26), transparent 20%),
+    radial-gradient(circle at 50% 100%, rgba(246, 190, 203, 0.62), transparent 30%),
+    linear-gradient(180deg, #fff1f4 0%, #f8edf2 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(255, 248, 250, 0.5), transparent 42%);
+  --ink: #372239;
+  --muted: #725a70;
+  --teal: #6f3155;
+  --teal-deep: #653052;
+  --sky: #d6567f;
+  --warm: #bd7a49;
+  --coral: #c84d70;
+  --panel: rgba(255, 250, 252, 0.94);
+  --panel-border: rgba(162, 88, 121, 0.22);
+  --panel-shadow: 0 22px 44px rgba(104, 65, 91, 0.12);
+}
+
 * {
   box-sizing: border-box;
 }

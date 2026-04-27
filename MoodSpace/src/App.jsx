@@ -3,7 +3,7 @@ import { HashRouter, NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { ConfirmDeleteDialog, HeaderDashboard, HomePage, SettingsPage, TrendsPage } from './pages/MoodSpacePages'
 import { CUSTOM_MOODS_KEY, FAVORITES_KEY, STORAGE_KEY, THEME_KEY, moods, themes } from './utils/data'
-import { buildDailySeries, createMoodId, formatLongDate, getDailyQuote, getDateFilterStart, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
+import { createMoodId, formatLongDate, getDailyQuote, getDateFilterStart, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
 
 function AppShell() {
   const importInputRef = useRef(null)
@@ -128,8 +128,6 @@ function AppShell() {
       moodBreakdown,
     }
   }, [entries, moodsList])
-
-  const dailySeries = useMemo(() => buildDailySeries(entries, 14), [entries])
 
   const filteredEntries = useMemo(() => {
     const normalizedSearch = historySearch.trim().toLowerCase()
@@ -492,7 +490,6 @@ function AppShell() {
                 setActiveChartPoint={setActiveChartPoint}
                 stats={stats}
                 trendInsights={trendInsights}
-                dailySeries={dailySeries}
               />
             }
           />

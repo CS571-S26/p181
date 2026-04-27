@@ -34,6 +34,30 @@ export const themes = [
     description: 'Soft lavender, berry, and misty blue.',
     swatches: ['#f7f0fb', '#9b6aa3', '#73a8b9'],
   },
+  {
+    id: 'sea-glass',
+    label: 'Sea Glass',
+    description: 'Cool aqua, navy, and clean foam tones.',
+    swatches: ['#eefbfa', '#247c8f', '#284d77'],
+  },
+  {
+    id: 'citrus-pop',
+    label: 'Citrus Pop',
+    description: 'Fresh lemon, leafy green, and bright coral.',
+    swatches: ['#fffbe6', '#2f7d4f', '#e85d4f'],
+  },
+  {
+    id: 'graphite',
+    label: 'Graphite',
+    description: 'A crisp grayscale theme with electric blue.',
+    swatches: ['#f4f6f8', '#2f3742', '#2f80ed'],
+  },
+  {
+    id: 'rose-ink',
+    label: 'Rose Ink',
+    description: 'Blush paper, deep plum, and rose accents.',
+    swatches: ['#fff1f4', '#6f3155', '#d6567f'],
+  },
 ]
 
 export const moods = [
