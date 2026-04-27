@@ -205,6 +205,72 @@
   --panel-shadow: 0 22px 44px rgba(104, 65, 91, 0.12);
 }
 
+:root[data-theme='morning-fog'] {
+  --page-background:
+    radial-gradient(circle at 12% 12%, rgba(111, 137, 163, 0.28), transparent 22%),
+    radial-gradient(circle at 84% 12%, rgba(79, 111, 104, 0.24), transparent 20%),
+    radial-gradient(circle at 50% 100%, rgba(216, 229, 224, 0.76), transparent 30%),
+    linear-gradient(180deg, #f2f6f5 0%, #e8eef1 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.46), transparent 42%);
+  --ink: #26323a;
+  --muted: #5e6d74;
+  --teal: #4f6f68;
+  --teal-deep: #45615b;
+  --sky: #6f89a3;
+  --warm: #b58f56;
+  --coral: #b66b69;
+  --panel: rgba(251, 253, 252, 0.94);
+  --panel-border: rgba(96, 121, 129, 0.22);
+  --panel-shadow: 0 22px 44px rgba(78, 96, 104, 0.12);
+}
+
+:root[data-theme='orchid-night'] {
+  color-scheme: dark;
+  --page-background:
+    radial-gradient(circle at 14% 10%, rgba(176, 112, 199, 0.28), transparent 24%),
+    radial-gradient(circle at 84% 16%, rgba(240, 198, 111, 0.18), transparent 18%),
+    linear-gradient(180deg, #181020 0%, #2a1936 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(176, 112, 199, 0.14), transparent 42%);
+  --ink: #fff3df;
+  --muted: #d5c3dc;
+  --teal: #b070c7;
+  --teal-deep: #c392d6;
+  --sky: #f0c66f;
+  --warm: #f0c66f;
+  --coral: #d9849d;
+  --panel: rgba(36, 23, 47, 0.92);
+  --panel-border: rgba(220, 183, 229, 0.22);
+  --panel-shadow: 0 24px 46px rgba(4, 1, 8, 0.3);
+}
+
+:root[data-theme='blueprint'] {
+  --page-background:
+    radial-gradient(circle at 12% 12%, rgba(0, 167, 199, 0.3), transparent 22%),
+    radial-gradient(circle at 84% 12%, rgba(36, 88, 184, 0.28), transparent 20%),
+    radial-gradient(circle at 50% 100%, rgba(201, 225, 255, 0.74), transparent 30%),
+    linear-gradient(180deg, #f2f7ff 0%, #e8f2ff 100%);
+  --body-texture:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.5), transparent 42%);
+  --ink: #1e2d4a;
+  --muted: #566781;
+  --teal: #2458b8;
+  --teal-deep: #234c98;
+  --sky: #00a7c7;
+  --warm: #ba8650;
+  --coral: #c85f72;
+  --panel: rgba(250, 253, 255, 0.94);
+  --panel-border: rgba(54, 111, 190, 0.22);
+  --panel-shadow: 0 22px 44px rgba(52, 91, 143, 0.12);
+}
+
 * {
   box-sizing: border-box;
 }

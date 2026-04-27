@@ -2039,6 +2039,189 @@ blockquote footer a {
   stroke: var(--sky);
 }
 
+:root[data-theme='morning-fog'] .app-shell::before {
+  background: radial-gradient(circle, rgba(111, 137, 163, 0.28), transparent 68%);
+}
+
+:root[data-theme='morning-fog'] .app-shell::after {
+  background: radial-gradient(circle, rgba(79, 111, 104, 0.26), transparent 68%);
+}
+
+:root[data-theme='morning-fog'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.74), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(213, 226, 225, 0.5), transparent 24%),
+    linear-gradient(145deg, rgba(252, 254, 253, 0.98), rgba(233, 239, 242, 0.94));
+}
+
+:root[data-theme='morning-fog'] .page-nav-link-active,
+:root[data-theme='morning-fog'] .primary-button,
+:root[data-theme='morning-fog'] .filter-chip-active,
+:root[data-theme='morning-fog'] .entry-mood-chip-active,
+:root[data-theme='morning-fog'] .mini-action-button,
+:root[data-theme='morning-fog'] .trend-bar-fill {
+  background: linear-gradient(135deg, var(--teal), var(--sky));
+}
+
+:root[data-theme='morning-fog'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='morning-fog'] .trend-line-point {
+  stroke: var(--sky);
+}
+
+:root[data-theme='orchid-night'] .app-shell::before {
+  background: radial-gradient(circle, rgba(176, 112, 199, 0.3), transparent 68%);
+}
+
+:root[data-theme='orchid-night'] .app-shell::after {
+  background: radial-gradient(circle, rgba(240, 198, 111, 0.2), transparent 68%);
+}
+
+:root[data-theme='orchid-night'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(176, 112, 199, 0.18), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(240, 198, 111, 0.12), transparent 24%),
+    linear-gradient(145deg, rgba(42, 25, 54, 0.98), rgba(30, 17, 40, 0.96));
+  box-shadow: 0 28px 60px rgba(4, 1, 8, 0.32);
+}
+
+:root[data-theme='orchid-night'] .page-nav,
+:root[data-theme='orchid-night'] .chart-range-controls,
+:root[data-theme='orchid-night'] .dashboard-card,
+:root[data-theme='orchid-night'] .hero-whisper,
+:root[data-theme='orchid-night'] .mood-preview,
+:root[data-theme='orchid-night'] .custom-emoji-current,
+:root[data-theme='orchid-night'] .history-badge,
+:root[data-theme='orchid-night'] .entry-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+:root[data-theme='orchid-night'] .sticker,
+:root[data-theme='orchid-night'] .mini-note,
+:root[data-theme='orchid-night'] .stat-card,
+:root[data-theme='orchid-night'] .overview-card,
+:root[data-theme='orchid-night'] .form-card,
+:root[data-theme='orchid-night'] .quote-card,
+:root[data-theme='orchid-night'] .favorites-card,
+:root[data-theme='orchid-night'] .data-card,
+:root[data-theme='orchid-night'] .history-card,
+:root[data-theme='orchid-night'] .trends-card,
+:root[data-theme='orchid-night'] .calendar-card,
+:root[data-theme='orchid-night'] .settings-card,
+:root[data-theme='orchid-night'] .mood-option,
+:root[data-theme='orchid-night'] .filter-chip,
+:root[data-theme='orchid-night'] .entry-mood-chip,
+:root[data-theme='orchid-night'] .custom-emoji-tab,
+:root[data-theme='orchid-night'] .custom-emoji-button,
+:root[data-theme='orchid-night'] blockquote,
+:root[data-theme='orchid-night'] .favorites-list li,
+:root[data-theme='orchid-night'] .entry-item,
+:root[data-theme='orchid-night'] .calendar-day,
+:root[data-theme='orchid-night'] .custom-mood-list li,
+:root[data-theme='orchid-night'] .trend-chart,
+:root[data-theme='orchid-night'] .chart-tooltip-card,
+:root[data-theme='orchid-night'] .trend-summary-card,
+:root[data-theme='orchid-night'] .confirm-dialog,
+:root[data-theme='orchid-night'] .theme-option {
+  border-color: var(--panel-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    rgba(36, 23, 47, 0.9);
+  color: var(--muted);
+}
+
+:root[data-theme='orchid-night'] .home-page .hero-panel,
+:root[data-theme='orchid-night'] .trends-page .hero-panel,
+:root[data-theme='orchid-night'] .settings-page .hero-panel {
+  background:
+    radial-gradient(circle at top right, rgba(176, 112, 199, 0.18), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(240, 198, 111, 0.12), transparent 28%),
+    rgba(36, 23, 47, 0.94);
+}
+
+:root[data-theme='orchid-night'] .page-nav-link {
+  color: var(--muted);
+}
+
+:root[data-theme='orchid-night'] .page-nav-link-active,
+:root[data-theme='orchid-night'] .chart-range-button-active,
+:root[data-theme='orchid-night'] .filter-chip-active,
+:root[data-theme='orchid-night'] .entry-mood-chip-active,
+:root[data-theme='orchid-night'] .custom-emoji-tab-active,
+:root[data-theme='orchid-night'] .custom-emoji-button-active,
+:root[data-theme='orchid-night'] .mini-action-button {
+  background: linear-gradient(135deg, #b070c7, #f0c66f);
+  color: #211529;
+}
+
+:root[data-theme='orchid-night'] .mood-option-active,
+:root[data-theme='orchid-night'] .ghost-button-active,
+:root[data-theme='orchid-night'] .theme-option-active {
+  background:
+    linear-gradient(180deg, rgba(176, 112, 199, 0.2), rgba(240, 198, 111, 0.08)),
+    rgba(48, 30, 62, 0.95);
+}
+
+:root[data-theme='orchid-night'] .notes-field textarea,
+:root[data-theme='orchid-night'] .entry-edit-field textarea,
+:root[data-theme='orchid-night'] .history-search-field input,
+:root[data-theme='orchid-night'] .history-date-field select,
+:root[data-theme='orchid-night'] .custom-mood-form input,
+:root[data-theme='orchid-night'] .custom-mood-form select {
+  background: rgba(20, 12, 28, 0.72);
+  color: var(--ink);
+}
+
+:root[data-theme='orchid-night'] .entry-mood strong,
+:root[data-theme='orchid-night'] .trend-row-label,
+:root[data-theme='orchid-night'] .custom-mood-pill {
+  color: var(--ink);
+}
+
+:root[data-theme='orchid-night'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='orchid-night'] .trend-line-point {
+  fill: #24172f;
+  stroke: var(--sky);
+}
+
+:root[data-theme='blueprint'] .app-shell::before {
+  background: radial-gradient(circle, rgba(0, 167, 199, 0.28), transparent 68%);
+}
+
+:root[data-theme='blueprint'] .app-shell::after {
+  background: radial-gradient(circle, rgba(36, 88, 184, 0.26), transparent 68%);
+}
+
+:root[data-theme='blueprint'] .app-header {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.74), transparent 20%),
+    radial-gradient(circle at 10% 22%, rgba(211, 231, 255, 0.5), transparent 24%),
+    linear-gradient(145deg, rgba(252, 254, 255, 0.98), rgba(232, 243, 255, 0.94));
+}
+
+:root[data-theme='blueprint'] .page-nav-link-active,
+:root[data-theme='blueprint'] .primary-button,
+:root[data-theme='blueprint'] .filter-chip-active,
+:root[data-theme='blueprint'] .entry-mood-chip-active,
+:root[data-theme='blueprint'] .mini-action-button,
+:root[data-theme='blueprint'] .trend-bar-fill {
+  background: linear-gradient(135deg, var(--teal), var(--sky));
+}
+
+:root[data-theme='blueprint'] .trend-line-path {
+  stroke: var(--teal);
+}
+
+:root[data-theme='blueprint'] .trend-line-point {
+  stroke: var(--sky);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

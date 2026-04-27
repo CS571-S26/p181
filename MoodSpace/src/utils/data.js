@@ -60,6 +60,24 @@ export const themes = [
     description: 'Blush paper, deep plum, and rose accents.',
     swatches: ['#fff1f4', '#6f3155', '#d6567f'],
   },
+  {
+    id: 'morning-fog',
+    label: 'Morning Fog',
+    description: 'Quiet gray-blue, pine, and pale mist.',
+    swatches: ['#f2f6f5', '#4f6f68', '#6f89a3'],
+  },
+  {
+    id: 'orchid-night',
+    label: 'Orchid Night',
+    description: 'Deep violet, orchid, and soft gold.',
+    swatches: ['#24172f', '#b070c7', '#f0c66f'],
+  },
+  {
+    id: 'blueprint',
+    label: 'Blueprint',
+    description: 'Clear paper, cobalt, and precise cyan.',
+    swatches: ['#f2f7ff', '#2458b8', '#00a7c7'],
+  },
 ]
 
 export const moods = [
