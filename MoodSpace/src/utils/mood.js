@@ -236,7 +236,7 @@ function buildDailySeries(entries, days = 14) {
   return series
 }
 
-function buildLinePath(series, width, height, padding) {
+function buildLinePath(series, width, height, padding, leftPadding = padding) {
   const usableSeries = series.filter((point) => point.average !== null)
   if (usableSeries.length === 0) {
     return ''
@@ -244,14 +244,14 @@ function buildLinePath(series, width, height, padding) {
 
   const minScore = -2
   const maxScore = 2
-  const innerWidth = width - padding * 2
+  const innerWidth = width - leftPadding - padding
   const innerHeight = height - padding * 2
 
   return usableSeries
     .map((point, index) => {
       const originalIndex = series.findIndex((item) => item.key === point.key)
       const x =
-        padding +
+        leftPadding +
         (series.length === 1 ? 0 : (originalIndex / (series.length - 1)) * innerWidth)
       const normalized = (point.average - minScore) / (maxScore - minScore)
       const y = height - padding - normalized * innerHeight
@@ -260,10 +260,10 @@ function buildLinePath(series, width, height, padding) {
     .join(' ')
 }
 
-function buildChartPoints(series, width, height, padding) {
+function buildChartPoints(series, width, height, padding, leftPadding = padding) {
   const minScore = -2
   const maxScore = 2
-  const innerWidth = width - padding * 2
+  const innerWidth = width - leftPadding - padding
   const innerHeight = height - padding * 2
 
   return series
@@ -273,7 +273,7 @@ function buildChartPoints(series, width, height, padding) {
       }
 
       const x =
-        padding +
+        leftPadding +
         (series.length === 1 ? 0 : (index / (series.length - 1)) * innerWidth)
       const normalized = (point.average - minScore) / (maxScore - minScore)
       const y = height - padding - normalized * innerHeight

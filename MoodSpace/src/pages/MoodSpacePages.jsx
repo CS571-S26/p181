@@ -15,6 +15,8 @@ const chartRangeOptions = [
   { days: 90, label: '3M' },
 ]
 
+const moodAxisLabels = ['Happy', 'Calm', 'Neutral', 'Low', 'Tough']
+
 function formatMonthLabel(date) {
   return new Intl.DateTimeFormat('en-US', {
     month: 'long',
@@ -664,12 +666,20 @@ function TrendsPage({
   const chartWidth = 720
   const chartHeight = 260
   const chartPadding = 28
-  const linePath = buildLinePath(dailySeries, chartWidth, chartHeight, chartPadding)
+  const chartLeftPadding = 82
+  const linePath = buildLinePath(
+    dailySeries,
+    chartWidth,
+    chartHeight,
+    chartPadding,
+    chartLeftPadding,
+  )
   const chartPoints = buildChartPoints(
     dailySeries,
     chartWidth,
     chartHeight,
     chartPadding,
+    chartLeftPadding,
   )
   const labelInterval = Math.max(1, Math.ceil(dailySeries.length / 14))
 
@@ -756,13 +766,6 @@ function TrendsPage({
             </p>
           ) : (
             <div className="chart-shell">
-              <div className="chart-scale">
-                <span>Happy</span>
-                <span>Calm</span>
-                <span>Neutral</span>
-                <span>Low</span>
-                <span>Tough</span>
-              </div>
               <div className="chart-stage">
                 <svg
                   className="trend-chart"
@@ -770,17 +773,27 @@ function TrendsPage({
                   role="img"
                   aria-label="Line graph of average mood over time"
                 >
-                  {[0, 1, 2, 3, 4].map((step) => {
+                  {moodAxisLabels.map((label, step) => {
                     const y = chartPadding + ((chartHeight - chartPadding * 2) / 4) * step
                     return (
-                      <line
-                        key={step}
-                        x1={chartPadding}
-                        y1={y}
-                        x2={chartWidth - chartPadding}
-                        y2={y}
-                        className="trend-grid-line"
-                      />
+                      <g key={label}>
+                        <text
+                          x={chartLeftPadding - 16}
+                          y={y}
+                          className="trend-axis-label"
+                          dominantBaseline="middle"
+                          textAnchor="end"
+                        >
+                          {label}
+                        </text>
+                        <line
+                          x1={chartLeftPadding}
+                          y1={y}
+                          x2={chartWidth - chartPadding}
+                          y2={y}
+                          className="trend-grid-line"
+                        />
+                      </g>
                     )
                   })}
                   <path d={linePath} className="trend-line-path" />
