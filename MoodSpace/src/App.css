@@ -2333,6 +2333,50 @@ blockquote footer a {
     white-space: nowrap;
   }
 
+  .theme-picker {
+    justify-content: center;
+  }
+
+  .theme-option {
+    width: clamp(4.35rem, 24vw, 4.9rem);
+    height: 3rem;
+  }
+
+  .theme-tooltip {
+    left: 50%;
+    width: min(13rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    white-space: normal;
+  }
+
+  .theme-option:nth-child(3n + 1) .theme-tooltip {
+    left: 0;
+    transform: translate(0, 0.35rem);
+  }
+
+  .theme-option:nth-child(3n) .theme-tooltip {
+    left: auto;
+    right: 0;
+    transform: translate(0, 0.35rem);
+  }
+
+  .theme-option:nth-child(3n + 1):hover .theme-tooltip,
+  .theme-option:nth-child(3n + 1):focus-visible .theme-tooltip,
+  .theme-option:nth-child(3n):hover .theme-tooltip,
+  .theme-option:nth-child(3n):focus-visible .theme-tooltip {
+    transform: translate(0, 0);
+  }
+
+  .theme-option:nth-child(3n + 1) .theme-tooltip::after {
+    left: 2.35rem;
+  }
+
+  .theme-option:nth-child(3n) .theme-tooltip::after {
+    left: auto;
+    right: 2.05rem;
+    transform: translate(50%, -50%) rotate(45deg);
+  }
+
   .stats-grid,
   .mood-grid,
   .entry-list,
