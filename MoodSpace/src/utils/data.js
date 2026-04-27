@@ -2,6 +2,8 @@ export const STORAGE_KEY = 'moodspace.entries'
 export const FAVORITES_KEY = 'moodspace.favoriteQuotes'
 export const THEME_KEY = 'moodspace.theme'
 export const CUSTOM_MOODS_KEY = 'moodspace.customMoods'
+export const QUOTE_CACHE_KEY = 'moodspace.remoteQuote'
+export const QUOTE_RANDOM_URL = 'https://dummyjson.com/quotes/random'
 
 export const themes = [
   {

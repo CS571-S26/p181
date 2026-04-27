@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { HashRouter, NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { ConfirmDeleteDialog, HeaderDashboard, HomePage, SettingsPage, TrendsPage } from './pages/MoodSpacePages'
-import { CUSTOM_MOODS_KEY, FAVORITES_KEY, STORAGE_KEY, THEME_KEY, moods, themes } from './utils/data'
-import { createMoodId, formatLongDate, getDailyQuote, getDateFilterStart, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
+import { CUSTOM_MOODS_KEY, FAVORITES_KEY, QUOTE_CACHE_KEY, STORAGE_KEY, THEME_KEY, moods, themes } from './utils/data'
+import { createMoodId, fetchRemoteQuote, formatLongDate, getDailyQuote, getDateFilterStart, getLocalDateKey, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
 
 function AppShell() {
   const importInputRef = useRef(null)
@@ -28,6 +28,7 @@ function AppShell() {
   const [historyMessage, setHistoryMessage] = useState('')
   const [importMessage, setImportMessage] = useState({ text: '', kind: 'info' })
   const [customMoodMessage, setCustomMoodMessage] = useState('')
+  const [quoteOfTheDay, setQuoteOfTheDay] = useState(() => getDailyQuote())
   const [customMoodDraft, setCustomMoodDraft] = useState({
     emoji: '',
     label: '',
@@ -37,7 +38,6 @@ function AppShell() {
     readStoredValue(THEME_KEY, themes[0].id),
   )
 
-  const quoteOfTheDay = useMemo(() => getDailyQuote(), [])
   const moodsList = useMemo(() => [...moods, ...customMoods], [customMoods])
   const selectedMoodDetails =
     moodsList.find((mood) => mood.id === selectedMood) ?? moods[0]
@@ -61,6 +61,41 @@ function AppShell() {
     document.documentElement.dataset.theme = nextTheme
     window.localStorage.setItem(THEME_KEY, JSON.stringify(nextTheme))
   }, [selectedTheme])
+
+  useEffect(() => {
+    let ignoreRequest = false
+    const todayKey = getLocalDateKey()
+    const cachedQuote = readStoredValue(QUOTE_CACHE_KEY, null)
+
+    if (
+      cachedQuote?.dateKey === todayKey &&
+      cachedQuote?.quote?.text &&
+      cachedQuote.quote.source === 'dummyjson'
+    ) {
+      setQuoteOfTheDay(cachedQuote.quote)
+      return undefined
+    }
+
+    fetchRemoteQuote()
+      .then((quote) => {
+        if (ignoreRequest) {
+          return
+        }
+
+        const cachedPayload = { dateKey: todayKey, quote }
+        window.localStorage.setItem(QUOTE_CACHE_KEY, JSON.stringify(cachedPayload))
+        setQuoteOfTheDay(quote)
+      })
+      .catch(() => {
+        if (!ignoreRequest) {
+          setQuoteOfTheDay(getDailyQuote())
+        }
+      })
+
+    return () => {
+      ignoreRequest = true
+    }
+  }, [])
 
   const stats = useMemo(() => {
     const totalEntries = entries.length

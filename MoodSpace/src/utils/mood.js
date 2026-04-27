@@ -1,4 +1,4 @@
-import { defaultMoodIds, moods, quotes } from './data'
+import { QUOTE_RANDOM_URL, defaultMoodIds, moods, quotes } from './data'
 
 function readStoredValue(key, fallback) {
   try {
@@ -17,7 +17,32 @@ function getDailyQuote() {
     today.getDate(),
   )
   const index = Math.floor(dayStamp / 86400000) % quotes.length
-  return quotes[index]
+  return {
+    ...quotes[index],
+    source: 'local',
+  }
+}
+
+async function fetchRemoteQuote() {
+  const response = await fetch(QUOTE_RANDOM_URL)
+
+  if (!response.ok) {
+    throw new Error('Quote API request failed.')
+  }
+
+  const payload = await response.json()
+  const text = typeof payload?.quote === 'string' ? payload.quote.trim() : ''
+  const author = typeof payload?.author === 'string' ? payload.author.trim() : ''
+
+  if (!text || !author) {
+    throw new Error('Quote API response was missing quote data.')
+  }
+
+  return {
+    text,
+    author,
+    source: 'dummyjson',
+  }
 }
 
 function formatDate(timestamp) {
@@ -296,6 +321,7 @@ export {
   formatDate,
   formatLongDate,
   formatShortDate,
+  fetchRemoteQuote,
   getDateFilterStart,
   getDailyQuote,
   getLocalDateKey,

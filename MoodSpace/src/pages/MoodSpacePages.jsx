@@ -522,7 +522,9 @@ function HomePage({
             </div>
             <blockquote>
               "{quoteOfTheDay.text}"
-              <footer>{quoteOfTheDay.author}</footer>
+              {quoteOfTheDay.author && quoteOfTheDay.author !== 'MoodSpace' ? (
+                <footer>{quoteOfTheDay.author}</footer>
+              ) : null}
             </blockquote>
           </section>
 

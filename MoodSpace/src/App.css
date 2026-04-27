@@ -856,9 +856,17 @@ blockquote::before {
 }
 
 blockquote footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 0.8rem;
   font-size: 0.94rem;
   color: #5b8ea3;
+}
+
+blockquote footer a {
+  color: var(--teal);
+  font-weight: 700;
 }
 
 .favorites-list,
