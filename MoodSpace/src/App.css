@@ -2294,16 +2294,43 @@ blockquote footer a {
     border-radius: 28px;
   }
 
+  .app-header {
+    padding: 1.55rem 1rem 1.6rem;
+  }
+
+  .app-header-row {
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-topline {
+    justify-content: center;
+  }
+
   .app-title {
-    font-size: 3.35rem;
+    font-size: clamp(2.75rem, 17vw, 3.35rem);
+    letter-spacing: -0.04em;
+  }
+
+  .header-copy {
+    margin-inline: auto;
+    text-align: center;
   }
 
   .page-nav {
-    width: 100%;
+    width: min(100%, 22rem);
+    align-self: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.34rem;
   }
 
   .page-nav-link {
     flex: 1 1 0;
+    min-width: 0;
+    padding: 0.68rem 0.35rem;
+    font-size: clamp(0.9rem, 4.4vw, 1rem);
+    white-space: nowrap;
   }
 
   .stats-grid,
