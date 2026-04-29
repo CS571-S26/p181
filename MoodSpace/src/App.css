@@ -217,6 +217,13 @@ blockquote,
   background: rgba(255, 255, 255, 0.66);
 }
 
+.page-nav-link:active {
+  transform: translateY(0);
+  background: #173849;
+  color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
+}
+
 .page-nav-link-active {
   background: linear-gradient(135deg, var(--teal), var(--sky));
   color: #fff;
@@ -228,6 +235,14 @@ blockquote,
   background: linear-gradient(135deg, #6f9eb0, #5c93b3);
   color: #173849;
   box-shadow: 0 16px 28px rgba(88, 136, 184, 0.26);
+}
+
+.page-nav-link-active:active {
+  background: linear-gradient(135deg, #155e75, #1f766f);
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 10px 18px rgba(23, 56, 73, 0.24);
 }
 
 .header-dashboard {
@@ -767,6 +782,23 @@ blockquote,
 .trend-line-hit:focus-visible {
   outline: 3px solid rgba(110, 175, 195, 0.28);
   outline-offset: 2px;
+}
+
+.mood-option:active,
+.ghost-button:active,
+.primary-button:active,
+.filter-chip:active,
+.delete-entry-button:active,
+.entry-mood-chip:active,
+.mini-action-button:active,
+.theme-option:active,
+.chart-range-button:active,
+.custom-emoji-tab:active,
+.custom-emoji-button:active {
+  transform: translateY(0);
+  background: #173849;
+  color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 .form-footer {
@@ -1779,6 +1811,25 @@ blockquote footer a {
   background: rgba(255, 255, 255, 0.12);
 }
 
+:root[data-theme='moonlight'] .page-nav-link:active,
+:root[data-theme='moonlight'] .mood-option:active,
+:root[data-theme='moonlight'] .ghost-button:active,
+:root[data-theme='moonlight'] .primary-button:active,
+:root[data-theme='moonlight'] .filter-chip:active,
+:root[data-theme='moonlight'] .delete-entry-button:active,
+:root[data-theme='moonlight'] .entry-mood-chip:active,
+:root[data-theme='moonlight'] .mini-action-button:active,
+:root[data-theme='moonlight'] .theme-option:active,
+:root[data-theme='moonlight'] .chart-range-button:active,
+:root[data-theme='moonlight'] .custom-emoji-tab:active,
+:root[data-theme='moonlight'] .custom-emoji-button:active {
+  background: #f4efe4;
+  color: #101925;
+  box-shadow:
+    inset 0 0 0 2px rgba(16, 25, 37, 0.22),
+    0 8px 18px rgba(2, 8, 16, 0.24);
+}
+
 :root[data-theme='moonlight'] .page-nav-link-active,
 :root[data-theme='moonlight'] .chart-range-button-active,
 :root[data-theme='moonlight'] .filter-chip-active,
@@ -1792,6 +1843,16 @@ blockquote footer a {
 
 :root[data-theme='moonlight'] .page-nav-link-active:hover,
 :root[data-theme='moonlight'] .page-nav-link-active:focus-visible {
+  color: #101925;
+}
+
+:root[data-theme='moonlight'] .page-nav-link-active:active,
+:root[data-theme='moonlight'] .chart-range-button-active:active,
+:root[data-theme='moonlight'] .filter-chip-active:active,
+:root[data-theme='moonlight'] .entry-mood-chip-active:active,
+:root[data-theme='moonlight'] .custom-emoji-tab-active:active,
+:root[data-theme='moonlight'] .custom-emoji-button-active:active {
+  background: linear-gradient(135deg, #a5efe2, #f0b77f);
   color: #101925;
 }
 
@@ -2172,6 +2233,25 @@ blockquote footer a {
   color: var(--muted);
 }
 
+:root[data-theme='orchid-night'] .page-nav-link:active,
+:root[data-theme='orchid-night'] .mood-option:active,
+:root[data-theme='orchid-night'] .ghost-button:active,
+:root[data-theme='orchid-night'] .primary-button:active,
+:root[data-theme='orchid-night'] .filter-chip:active,
+:root[data-theme='orchid-night'] .delete-entry-button:active,
+:root[data-theme='orchid-night'] .entry-mood-chip:active,
+:root[data-theme='orchid-night'] .mini-action-button:active,
+:root[data-theme='orchid-night'] .theme-option:active,
+:root[data-theme='orchid-night'] .chart-range-button:active,
+:root[data-theme='orchid-night'] .custom-emoji-tab:active,
+:root[data-theme='orchid-night'] .custom-emoji-button:active {
+  background: #f7edf7;
+  color: #211529;
+  box-shadow:
+    inset 0 0 0 2px rgba(33, 21, 41, 0.22),
+    0 8px 18px rgba(4, 1, 8, 0.26);
+}
+
 :root[data-theme='orchid-night'] .page-nav-link-active,
 :root[data-theme='orchid-night'] .chart-range-button-active,
 :root[data-theme='orchid-night'] .filter-chip-active,
@@ -2180,6 +2260,16 @@ blockquote footer a {
 :root[data-theme='orchid-night'] .custom-emoji-button-active,
 :root[data-theme='orchid-night'] .mini-action-button {
   background: linear-gradient(135deg, #b070c7, #f0c66f);
+  color: #211529;
+}
+
+:root[data-theme='orchid-night'] .page-nav-link-active:active,
+:root[data-theme='orchid-night'] .chart-range-button-active:active,
+:root[data-theme='orchid-night'] .filter-chip-active:active,
+:root[data-theme='orchid-night'] .entry-mood-chip-active:active,
+:root[data-theme='orchid-night'] .custom-emoji-tab-active:active,
+:root[data-theme='orchid-night'] .custom-emoji-button-active:active {
+  background: linear-gradient(135deg, #f1c9ee, #f6d286);
   color: #211529;
 }
 
