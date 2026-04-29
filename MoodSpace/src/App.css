@@ -1807,8 +1807,10 @@ blockquote footer a {
   color: var(--muted);
 }
 
-:root[data-theme='moonlight'] .page-nav-link:hover {
-  background: rgba(255, 255, 255, 0.12);
+:root[data-theme='moonlight'] .page-nav-link:not(.page-nav-link-active):hover {
+  background: #f4efe4;
+  color: #101925;
+  box-shadow: 0 10px 22px rgba(2, 8, 16, 0.18);
 }
 
 :root[data-theme='moonlight'] .page-nav-link:active,
@@ -1843,6 +1845,7 @@ blockquote footer a {
 
 :root[data-theme='moonlight'] .page-nav-link-active:hover,
 :root[data-theme='moonlight'] .page-nav-link-active:focus-visible {
+  background: linear-gradient(135deg, #a5efe2, #f0b77f);
   color: #101925;
 }
 
@@ -1870,6 +1873,21 @@ blockquote footer a {
 :root[data-theme='moonlight'] .mini-action-button-ghost {
   background: rgba(255, 255, 255, 0.08);
   color: var(--ink);
+}
+
+:root[data-theme='moonlight'] .mood-option:not(.mood-option-active):hover,
+:root[data-theme='moonlight'] .ghost-button:not(.ghost-button-active):hover,
+:root[data-theme='moonlight'] .filter-chip:not(.filter-chip-active):hover,
+:root[data-theme='moonlight'] .delete-entry-button:hover,
+:root[data-theme='moonlight'] .entry-mood-chip:not(.entry-mood-chip-active):hover,
+:root[data-theme='moonlight'] .mini-action-button-ghost:hover,
+:root[data-theme='moonlight'] .theme-option:not(.theme-option-active):hover,
+:root[data-theme='moonlight'] .chart-range-button:not(.chart-range-button-active):hover,
+:root[data-theme='moonlight'] .custom-emoji-tab:not(.custom-emoji-tab-active):hover,
+:root[data-theme='moonlight'] .custom-emoji-button:not(.custom-emoji-button-active):hover {
+  background: #f4efe4;
+  color: #101925;
+  box-shadow: 0 10px 22px rgba(2, 8, 16, 0.18);
 }
 
 :root[data-theme='moonlight'] .notes-field textarea,
@@ -2233,6 +2251,12 @@ blockquote footer a {
   color: var(--muted);
 }
 
+:root[data-theme='orchid-night'] .page-nav-link:not(.page-nav-link-active):hover {
+  background: #f7edf7;
+  color: #211529;
+  box-shadow: 0 10px 22px rgba(4, 1, 8, 0.2);
+}
+
 :root[data-theme='orchid-night'] .page-nav-link:active,
 :root[data-theme='orchid-night'] .mood-option:active,
 :root[data-theme='orchid-night'] .ghost-button:active,
@@ -2263,6 +2287,12 @@ blockquote footer a {
   color: #211529;
 }
 
+:root[data-theme='orchid-night'] .page-nav-link-active:hover,
+:root[data-theme='orchid-night'] .page-nav-link-active:focus-visible {
+  background: linear-gradient(135deg, #f1c9ee, #f6d286);
+  color: #211529;
+}
+
 :root[data-theme='orchid-night'] .page-nav-link-active:active,
 :root[data-theme='orchid-night'] .chart-range-button-active:active,
 :root[data-theme='orchid-night'] .filter-chip-active:active,
@@ -2279,6 +2309,21 @@ blockquote footer a {
   background:
     linear-gradient(180deg, rgba(176, 112, 199, 0.2), rgba(240, 198, 111, 0.08)),
     rgba(48, 30, 62, 0.95);
+}
+
+:root[data-theme='orchid-night'] .mood-option:not(.mood-option-active):hover,
+:root[data-theme='orchid-night'] .ghost-button:not(.ghost-button-active):hover,
+:root[data-theme='orchid-night'] .filter-chip:not(.filter-chip-active):hover,
+:root[data-theme='orchid-night'] .delete-entry-button:hover,
+:root[data-theme='orchid-night'] .entry-mood-chip:not(.entry-mood-chip-active):hover,
+:root[data-theme='orchid-night'] .mini-action-button-ghost:hover,
+:root[data-theme='orchid-night'] .theme-option:not(.theme-option-active):hover,
+:root[data-theme='orchid-night'] .chart-range-button:not(.chart-range-button-active):hover,
+:root[data-theme='orchid-night'] .custom-emoji-tab:not(.custom-emoji-tab-active):hover,
+:root[data-theme='orchid-night'] .custom-emoji-button:not(.custom-emoji-button-active):hover {
+  background: #f7edf7;
+  color: #211529;
+  box-shadow: 0 10px 22px rgba(4, 1, 8, 0.2);
 }
 
 :root[data-theme='orchid-night'] .notes-field textarea,
