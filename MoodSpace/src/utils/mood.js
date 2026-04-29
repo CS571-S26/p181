@@ -1,5 +1,12 @@
 import { QUOTE_RANDOM_URL, defaultMoodIds, moods, quotes } from './data'
 
+const MOOD_SCORE_MIN = -5
+const MOOD_SCORE_MAX = 5
+
+function clampMoodScore(score) {
+  return Math.max(MOOD_SCORE_MIN, Math.min(MOOD_SCORE_MAX, Math.round(score)))
+}
+
 function readStoredValue(key, fallback) {
   try {
     const rawValue = window.localStorage.getItem(key)
@@ -128,7 +135,7 @@ function normalizeCustomMoods(rawMoods) {
       return normalizedMoods
     }
 
-    const safeScore = Math.max(-2, Math.min(2, Math.round(score)))
+    const safeScore = clampMoodScore(score)
     seenIds.add(rawId)
     normalizedMoods.push({
       id: rawId,
@@ -247,8 +254,6 @@ function buildLinePath(series, width, height, padding, leftPadding = padding) {
     return ''
   }
 
-  const minScore = -2
-  const maxScore = 2
   const innerWidth = width - leftPadding - padding
   const innerHeight = height - padding * 2
 
@@ -258,7 +263,12 @@ function buildLinePath(series, width, height, padding, leftPadding = padding) {
       const x =
         leftPadding +
         (series.length === 1 ? 0 : (originalIndex / (series.length - 1)) * innerWidth)
-      const normalized = (point.average - minScore) / (maxScore - minScore)
+      const boundedAverage = Math.max(
+        MOOD_SCORE_MIN,
+        Math.min(MOOD_SCORE_MAX, point.average),
+      )
+      const normalized =
+        (boundedAverage - MOOD_SCORE_MIN) / (MOOD_SCORE_MAX - MOOD_SCORE_MIN)
       const y = height - padding - normalized * innerHeight
       return `${index === 0 ? 'M' : 'L'} ${x} ${y}`
     })
@@ -266,8 +276,6 @@ function buildLinePath(series, width, height, padding, leftPadding = padding) {
 }
 
 function buildChartPoints(series, width, height, padding, leftPadding = padding) {
-  const minScore = -2
-  const maxScore = 2
   const innerWidth = width - leftPadding - padding
   const innerHeight = height - padding * 2
 
@@ -280,7 +288,12 @@ function buildChartPoints(series, width, height, padding, leftPadding = padding)
       const x =
         leftPadding +
         (series.length === 1 ? 0 : (index / (series.length - 1)) * innerWidth)
-      const normalized = (point.average - minScore) / (maxScore - minScore)
+      const boundedAverage = Math.max(
+        MOOD_SCORE_MIN,
+        Math.min(MOOD_SCORE_MAX, point.average),
+      )
+      const normalized =
+        (boundedAverage - MOOD_SCORE_MIN) / (MOOD_SCORE_MAX - MOOD_SCORE_MIN)
       const y = height - padding - normalized * innerHeight
 
       return { ...point, x, y }
@@ -322,6 +335,7 @@ export {
   buildChartPoints,
   buildDailySeries,
   buildLinePath,
+  clampMoodScore,
   createMoodId,
   formatDate,
   formatLongDate,
@@ -332,6 +346,8 @@ export {
   getLocalDateKey,
   getLongestStreak,
   getStreak,
+  MOOD_SCORE_MAX,
+  MOOD_SCORE_MIN,
   normalizeCustomMoods,
   normalizeImportedEntries,
   normalizeMoodLabel,

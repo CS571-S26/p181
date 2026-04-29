@@ -3,7 +3,7 @@ import { HashRouter, NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { ConfirmDeleteDialog, HeaderDashboard, HomePage, SettingsPage, TrendsPage } from './pages/MoodSpacePages'
 import { CUSTOM_MOODS_KEY, FAVORITES_KEY, QUOTE_CACHE_KEY, STORAGE_KEY, THEME_KEY, moods, themes } from './utils/data'
-import { createMoodId, fetchRemoteQuote, formatLongDate, getDailyQuote, getDateFilterStart, getLocalDateKey, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
+import { clampMoodScore, createMoodId, fetchRemoteQuote, formatLongDate, getDailyQuote, getDateFilterStart, getLocalDateKey, getLongestStreak, getStreak, normalizeCustomMoods, normalizeImportedEntries, normalizeMoodLabel, readStoredValue } from './utils/mood'
 
 function AppShell() {
   const importInputRef = useRef(null)
@@ -315,7 +315,7 @@ function AppShell() {
       id: moodId,
       label,
       emoji,
-      score: Math.max(-2, Math.min(2, Math.round(score))),
+      score: Number.isNaN(score) ? 0 : clampMoodScore(score),
       custom: true,
     }
 

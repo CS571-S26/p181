@@ -6,6 +6,8 @@ import {
   buildLinePath,
   formatDate,
   getLocalDateKey,
+  MOOD_SCORE_MAX,
+  MOOD_SCORE_MIN,
 } from '../utils/mood'
 
 const chartRangeOptions = [
@@ -15,7 +17,15 @@ const chartRangeOptions = [
   { days: 90, label: '3M' },
 ]
 
-const moodAxisLabels = ['Happy', 'Calm', 'Neutral', 'Low', 'Tough']
+const moodAxisLabels = [
+  { label: '+5', value: MOOD_SCORE_MAX },
+  { label: '+2.5', value: 2.5 },
+  { label: '0', value: 0 },
+  { label: '-2.5', value: -2.5 },
+  { label: '-5', value: MOOD_SCORE_MIN },
+]
+
+const customMoodScoreOptions = Array.from({ length: 11 }, (_, index) => 5 - index)
 
 function formatMonthLabel(date) {
   return new Intl.DateTimeFormat('en-US', {
@@ -811,10 +821,14 @@ function TrendsPage({
                   onMouseMove={selectNearestChartPoint}
                   onMouseLeave={() => setActiveChartPoint(null)}
                 >
-                  {moodAxisLabels.map((label, step) => {
-                    const y = chartPadding + ((chartHeight - chartPadding * 2) / 4) * step
+                  {moodAxisLabels.map((axisLabel) => {
+                    const y =
+                      chartPadding +
+                      ((MOOD_SCORE_MAX - axisLabel.value) /
+                        (MOOD_SCORE_MAX - MOOD_SCORE_MIN)) *
+                        (chartHeight - chartPadding * 2)
                     return (
-                      <g key={label}>
+                      <g key={axisLabel.label}>
                         <text
                           x={chartLeftPadding - 16}
                           y={y}
@@ -822,7 +836,7 @@ function TrendsPage({
                           dominantBaseline="middle"
                           textAnchor="end"
                         >
-                          {label}
+                          {axisLabel.label}
                         </text>
                         <line
                           x1={chartLeftPadding}
@@ -874,7 +888,7 @@ function TrendsPage({
                       <span className="trend-summary-label">Selected day</span>
                       <strong>{activeChartPoint.label}</strong>
                       <p>
-                        Average mood score: {activeChartPoint.average?.toFixed(1)} / 2
+                        Average mood score: {activeChartPoint.average?.toFixed(1)} / {MOOD_SCORE_MAX}
                       </p>
                     </>
                   ) : (
@@ -1147,7 +1161,7 @@ function CustomMoodManager({
           />
         </label>
         <label>
-          <span className="field-label">Score</span>
+          <span className="field-label">Score (-5 to 5)</span>
           <select
             value={customMoodDraft.score}
             onChange={(event) =>
@@ -1157,11 +1171,11 @@ function CustomMoodManager({
               }))
             }
           >
-            <option value="2">Very light</option>
-            <option value="1">Light</option>
-            <option value="0">Mixed</option>
-            <option value="-1">Heavy</option>
-            <option value="-2">Very heavy</option>
+            {customMoodScoreOptions.map((score) => (
+              <option key={score} value={score}>
+                {score}
+              </option>
+            ))}
           </select>
         </label>
         <button type="submit" className="primary-button">
