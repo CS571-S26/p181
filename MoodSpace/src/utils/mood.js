@@ -54,7 +54,7 @@ function formatDate(timestamp) {
 
 function formatShortDate(dateKey) {
   return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
+    month: 'numeric',
     day: 'numeric',
   }).format(new Date(`${dateKey}T00:00:00`))
 }
@@ -66,6 +66,11 @@ function getLocalDateKey(value = new Date()) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function getUtcDayNumber(dateKey) {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return Date.UTC(year, month - 1, day) / 86400000
 }
 
 function getDateFilterStart(filter) {
@@ -152,7 +157,7 @@ function getStreak(entries) {
 
   const uniqueDays = [
     ...new Set(
-      entries.map((entry) => new Date(entry.createdAt).toISOString().slice(0, 10)),
+      entries.map((entry) => getLocalDateKey(entry.createdAt)),
     ),
   ].sort((left, right) => right.localeCompare(left))
 
@@ -164,7 +169,7 @@ function getStreak(entries) {
     comparisonDay.setHours(0, 0, 0, 0)
     comparisonDay.setDate(comparisonDay.getDate() - index)
 
-    const expectedDay = comparisonDay.toISOString().slice(0, 10)
+    const expectedDay = getLocalDateKey(comparisonDay)
     if (uniqueDays[index] !== expectedDay) {
       break
     }
@@ -181,7 +186,7 @@ function getLongestStreak(entries) {
 
   const uniqueDays = [
     ...new Set(
-      entries.map((entry) => new Date(entry.createdAt).toISOString().slice(0, 10)),
+      entries.map((entry) => getLocalDateKey(entry.createdAt)),
     ),
   ].sort()
 
@@ -189,9 +194,9 @@ function getLongestStreak(entries) {
   let current = 1
 
   for (let index = 1; index < uniqueDays.length; index += 1) {
-    const previous = new Date(`${uniqueDays[index - 1]}T00:00:00`)
-    const currentDay = new Date(`${uniqueDays[index]}T00:00:00`)
-    const difference = (currentDay - previous) / 86400000
+    const previous = getUtcDayNumber(uniqueDays[index - 1])
+    const currentDay = getUtcDayNumber(uniqueDays[index])
+    const difference = currentDay - previous
 
     if (difference === 1) {
       current += 1
@@ -206,7 +211,7 @@ function getLongestStreak(entries) {
 
 function buildDailySeries(entries, days = 14) {
   const grouped = entries.reduce((accumulator, entry) => {
-    const key = new Date(entry.createdAt).toISOString().slice(0, 10)
+    const key = getLocalDateKey(entry.createdAt)
     if (!accumulator[key]) {
       accumulator[key] = { total: 0, count: 0 }
     }
@@ -222,7 +227,7 @@ function buildDailySeries(entries, days = 14) {
   for (let offset = days - 1; offset >= 0; offset -= 1) {
     const pointDate = new Date(today)
     pointDate.setDate(pointDate.getDate() - offset)
-    const key = pointDate.toISOString().slice(0, 10)
+    const key = getLocalDateKey(pointDate)
     const dayData = grouped[key]
     const average = dayData ? dayData.total / dayData.count : null
 

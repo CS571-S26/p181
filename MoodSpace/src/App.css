@@ -33,7 +33,7 @@
 .app-header,
 .app-main,
 .app-footer {
-  width: min(1120px, 100%);
+  width: min(1240px, 100%);
   margin-inline: auto;
 }
 
@@ -1549,6 +1549,7 @@ blockquote footer a {
   box-shadow:
     inset 0 0 0 1px rgba(141, 187, 196, 0.18),
     0 12px 26px rgba(109, 145, 162, 0.08);
+  overflow: visible;
 }
 
 .trend-grid-line {
@@ -1574,11 +1575,28 @@ blockquote footer a {
   stroke: #5b92c4;
   stroke-width: 4;
   filter: drop-shadow(0 4px 10px rgba(91, 146, 196, 0.18));
+  pointer-events: none;
+  transition:
+    r 0.16s ease,
+    stroke-width 0.16s ease;
 }
 
 .trend-line-hit {
   fill: transparent;
   cursor: pointer;
+  pointer-events: all;
+}
+
+.trend-line-hit:hover {
+  fill: rgba(106, 173, 168, 0.08);
+}
+
+.trend-selected-guide {
+  stroke: rgba(47, 143, 140, 0.35);
+  stroke-dasharray: 4 6;
+  stroke-linecap: round;
+  stroke-width: 2;
+  pointer-events: none;
 }
 
 .chart-tooltip-card,
@@ -1590,7 +1608,9 @@ blockquote footer a {
 }
 
 .chart-tooltip-card {
-  min-height: 92px;
+  display: grid;
+  gap: 0.25rem;
+  min-height: 6.35rem;
 }
 
 .chart-tooltip-card strong,
@@ -1602,24 +1622,30 @@ blockquote footer a {
 
 .chart-tooltip-card strong,
 .trend-summary-card strong {
-  margin-top: 0.45rem;
+  margin-top: 0.15rem;
   color: var(--ink);
 }
 
 .chart-tooltip-card p {
-  margin: 0.45rem 0 0;
+  margin: 0.1rem 0 0;
+  line-height: 1.45;
 }
 
 .chart-label-row {
   display: grid;
   grid-template-columns: repeat(var(--chart-label-count, 14), minmax(0, 1fr));
   gap: 0.3rem;
+  padding-left: var(--chart-left-gutter, 10.7%);
+  padding-right: var(--chart-right-gutter, 3.7%);
   color: var(--muted);
   font-size: 0.78rem;
 }
 
 .chart-label-row span {
+  min-width: 0;
+  overflow: visible;
   text-align: center;
+  white-space: nowrap;
 }
 
 .trend-summary-grid,
@@ -2407,7 +2433,8 @@ blockquote footer a {
   }
 
   .chart-label-row span {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
+    font-weight: 700;
   }
 
   .trend-row {

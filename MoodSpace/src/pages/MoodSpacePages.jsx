@@ -663,10 +663,10 @@ function TrendsPage({
     () => buildDailySeries(entries, chartRangeDays),
     [chartRangeDays, entries],
   )
-  const chartWidth = 720
-  const chartHeight = 260
-  const chartPadding = 28
-  const chartLeftPadding = 82
+  const chartWidth = 860
+  const chartHeight = 300
+  const chartPadding = 32
+  const chartLeftPadding = 92
   const linePath = buildLinePath(
     dailySeries,
     chartWidth,
@@ -681,7 +681,43 @@ function TrendsPage({
     chartPadding,
     chartLeftPadding,
   )
-  const labelInterval = Math.max(1, Math.ceil(dailySeries.length / 14))
+  const chartHitZones = chartPoints.map((point, index) => {
+    const previousPoint = chartPoints[index - 1]
+    const nextPoint = chartPoints[index + 1]
+    const leftBoundary = previousPoint
+      ? (previousPoint.x + point.x) / 2
+      : chartLeftPadding
+    const rightBoundary = nextPoint
+      ? (point.x + nextPoint.x) / 2
+      : chartWidth - chartPadding
+
+    return {
+      ...point,
+      hitX: leftBoundary,
+      hitWidth: Math.max(28, rightBoundary - leftBoundary),
+    }
+  })
+  const labelInterval = Math.max(1, Math.ceil(dailySeries.length / 5))
+
+  function selectNearestChartPoint(event) {
+    if (chartPoints.length === 0) {
+      return
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const pointerX = ((event.clientX - bounds.left) / bounds.width) * chartWidth
+    const clampedX = Math.min(
+      chartWidth - chartPadding,
+      Math.max(chartLeftPadding, pointerX),
+    )
+    const nearestPoint = chartPoints.reduce((nearest, point) =>
+      Math.abs(point.x - clampedX) < Math.abs(nearest.x - clampedX)
+        ? point
+        : nearest,
+    )
+
+    setActiveChartPoint(nearestPoint)
+  }
 
   return (
     <div className="page-stack trends-page">
@@ -772,6 +808,8 @@ function TrendsPage({
                   viewBox={`0 0 ${chartWidth} ${chartHeight}`}
                   role="img"
                   aria-label="Line graph of average mood over time"
+                  onMouseMove={selectNearestChartPoint}
+                  onMouseLeave={() => setActiveChartPoint(null)}
                 >
                   {moodAxisLabels.map((label, step) => {
                     const y = chartPadding + ((chartHeight - chartPadding * 2) / 4) * step
@@ -797,18 +835,28 @@ function TrendsPage({
                     )
                   })}
                   <path d={linePath} className="trend-line-path" />
-                  {chartPoints.map((point) => (
+                  {chartHitZones.map((point) => (
                     <g key={point.key}>
-                      <circle
-                        cx={point.x}
-                        cy={point.y}
-                        r="12"
+                      {activeChartPoint?.key === point.key ? (
+                        <line
+                          x1={point.x}
+                          y1={chartPadding}
+                          x2={point.x}
+                          y2={chartHeight - chartPadding}
+                          className="trend-selected-guide"
+                        />
+                      ) : null}
+                      <rect
+                        x={point.hitX}
+                        y={chartPadding}
+                        width={point.hitWidth}
+                        height={chartHeight - chartPadding * 2}
+                        rx="10"
                         className="trend-line-hit"
-                        onMouseEnter={() => setActiveChartPoint(point)}
                         onFocus={() => setActiveChartPoint(point)}
-                        onMouseLeave={() => setActiveChartPoint(null)}
                         onBlur={() => setActiveChartPoint(null)}
                         tabIndex="0"
+                        role="button"
                         aria-label={`${point.label}: average mood ${point.average?.toFixed(1)}`}
                       />
                       <circle
@@ -839,7 +887,11 @@ function TrendsPage({
                 </div>
                 <div
                   className="chart-label-row"
-                  style={{ '--chart-label-count': dailySeries.length }}
+                  style={{
+                    '--chart-label-count': dailySeries.length,
+                    '--chart-left-gutter': `${(chartLeftPadding / chartWidth) * 100}%`,
+                    '--chart-right-gutter': `${(chartPadding / chartWidth) * 100}%`,
+                  }}
                 >
                   {dailySeries.map((point, index) => (
                     <span key={point.key}>
